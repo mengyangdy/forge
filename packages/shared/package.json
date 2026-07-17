@@ -1,0 +1,82 @@
+{
+  "name": "@forge/shared",
+  "version": "1.0.0",
+  "description": "Shared schema, utilities, color tools, and logger for the Forge monorepo",
+  "keywords": [],
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "sideEffects": false,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "utils": [
+        "./src/utils/index.ts"
+      ],
+      "utils/path": [
+        "./src/utils/path.ts"
+      ],
+      "utils/web": [
+        "./src/utils/web/index.ts"
+      ],
+      "color": [
+        "./src/color/index.ts"
+      ],
+      "logger": [
+        "./src/logger/index.ts"
+      ]
+    }
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./utils": "./src/utils/index.ts",
+    "./utils/path": "./src/utils/path.ts",
+    "./utils/web": "./src/utils/web/index.ts",
+    "./color": "./src/color/index.ts",
+    "./logger": "./src/logger/index.ts"
+  },
+  "scripts": {
+    "test": "pnpm typecheck",
+    "test:unit": "node ../../node_modules/vitest/vitest.mjs run --config vitest.config.ts",
+    "test:utils": "node ../../node_modules/vitest/vitest.mjs run --config vitest.utils.config.ts",
+    "test:color": "node ../../node_modules/vitest/vitest.mjs run --config vitest.color.config.ts",
+    "typecheck": "tsc --noEmit --skipLibCheck"
+  },
+  "dependencies": {
+    "@loglayer/transport": "^2.3.13",
+    "@react-native-async-storage/async-storage": "^3.0.2",
+    "clsx": "catalog:utils",
+    "colord": "catalog:utils",
+    "crypto-js": "catalog:utils",
+    "culori": "^4.0.2",
+    "drizzle-orm": "catalog:",
+    "drizzle-zod": "catalog:",
+    "idb": "^8.0.0",
+    "klona": "catalog:utils",
+    "localforage": "catalog:utils",
+    "loglayer": "^8.4.0",
+    "nanoid": "catalog:utils",
+    "pg": "catalog:",
+    "radash": "^12.1.1",
+    "react": "catalog:core",
+    "serialize-error": "^11.0.0",
+    "tailwind-merge": "catalog:utils",
+    "temporal-polyfill": "catalog:utils",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@forge/tsconfig": "workspace:*",
+    "@testing-library/jest-dom": "catalog:dev",
+    "@types/crypto-js": "catalog:dev",
+    "@types/culori": "^4.0.1",
+    "@types/node": "catalog:",
+    "@types/pg": "catalog:",
+    "@types/react": "catalog:dev",
+    "typescript": "catalog:core",
+    "vitest": "catalog:dev"
+  }
+}

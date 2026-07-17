@@ -1,0 +1,45 @@
+{
+  "name": "@forge/backend",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "types": "dist/index.d.mts",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsdown src/index.ts --clean",
+    "start": "cross-env NODE_ENV=production node dist/index.mjs",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:seed": "tsx src/db/seed.ts"
+  },
+  "dependencies": {
+    "@forge/shared": "workspace:*",
+    "@hono/node-server": "catalog:",
+    "@hono/zod-openapi": "catalog:",
+    "@hono/zod-validator": "catalog:",
+    "@scalar/hono-api-reference": "catalog:",
+    "bcryptjs": "catalog:",
+    "bullmq": "catalog:",
+    "drizzle-orm": "catalog:",
+    "hono": "catalog:",
+    "ioredis": "catalog:",
+    "pg": "catalog:",
+    "pino": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@asteasolutions/zod-to-openapi": "^8.5.0",
+    "@types/bcryptjs": "catalog:",
+    "@types/node": "catalog:",
+    "@types/pg": "catalog:",
+    "cross-env": "catalog:",
+    "drizzle-kit": "catalog:",
+    "pino-pretty": "catalog:",
+    "tsdown": "catalog:",
+    "tsx": "catalog:"
+  }
+}

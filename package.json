@@ -1,0 +1,29 @@
+{
+  "name": "forge",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "ready": "vp check && vp run -r test && vp run -r build",
+    "dev": "concurrently \"vp run @forge/backend#dev\" \"vp run @forge/frontend#dev\"",
+    "dev:frontend": "vp run @forge/frontend#dev",
+    "dev:backend": "vp run @forge/backend#dev",
+    "check": "vp check --fix",
+    "cm": "vp check --fix && git add . && dy git-commit -l=zh-cn",
+    "prepare": "vp config"
+  },
+  "devDependencies": {
+    "@dylanjs/cli": "catalog:",
+    "@types/node": "catalog:",
+    "concurrently": "catalog:",
+    "cross-env": "catalog:",
+    "dotenv": "catalog:",
+    "vite": "catalog:",
+    "vite-plus": "catalog:",
+    "vitest": "catalog:"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "packageManager": "pnpm@11.3.0"
+}

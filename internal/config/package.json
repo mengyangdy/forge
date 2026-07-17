@@ -1,0 +1,59 @@
+{
+  "name": "@forge/config",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Shared development configuration for Forge Admin (Vitest, Oxlint, etc.)",
+  "keywords": [
+    "config",
+    "forge",
+    "oxlint",
+    "typescript",
+    "vitest"
+  ],
+  "homepage": "https://github.com/Ohh-889/forge-admin/tree/master/internal/config",
+  "bugs": {
+    "url": "https://github.com/Ohh-889/forge-admin/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Ohh",
+    "email": "1509326266@qq.com",
+    "url": "https://github.com/Ohh-889"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Ohh-889/forge-admin.git",
+    "directory": "internal/config"
+  },
+  "files": [
+    "dist",
+    "oxlint"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    "./oxlint/base.json": "./oxlint/base.json",
+    "./oxlint/next.json": "./oxlint/next.json",
+    "./oxlint/react.json": "./oxlint/react.json",
+    "./package.json": "./package.json",
+    "./vitest": {
+      "types": "./dist/index.d.mts",
+      "default": "./dist/index.mjs"
+    }
+  },
+  "scripts": {
+    "build": "tsdown",
+    "clean": "rimraf dist",
+    "dev": "tsdown --watch",
+    "lint": "oxlint",
+    "typecheck": "tsc --noEmit --skipLibCheck"
+  },
+  "devDependencies": {
+    "@forge/tsconfig": "workspace:*",
+    "oxlint": "catalog:dev",
+    "rimraf": "catalog:dev",
+    "tsdown": "catalog:dev",
+    "typescript": "catalog:core",
+    "vitest": "catalog:dev"
+  }
+}
