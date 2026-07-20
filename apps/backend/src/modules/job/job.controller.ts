@@ -9,10 +9,7 @@ const app = new OpenAPIHono();
 // 全局引入 Bearer JWT 认证
 app.use("*", authMiddleware);
 
-// =================== OpenAPI 接口定义 ===================
-
 // 1. 获取所有队列概览列表
-app.use("/queues", requirePermission("sys:job:list"));
 const queuesRoute = createRoute({
   method: "get",
   path: "/queues",
@@ -56,7 +53,6 @@ const queuesRoute = createRoute({
 });
 
 // 2. 查询指定队列、指定状态的任务列表（分页）
-app.use("/list", requirePermission("sys:job:list"));
 const listRoute = createRoute({
   method: "get",
   path: "/list",
@@ -112,7 +108,6 @@ const listRoute = createRoute({
 });
 
 // 3. 获取单个任务的详细信息
-app.use("/detail", requirePermission("sys:job:list"));
 const detailRoute = createRoute({
   method: "get",
   path: "/detail",
@@ -159,7 +154,6 @@ const detailRoute = createRoute({
   },
 });
 
-app.use("/action", requirePermission("sys:job:action"));
 // 4. 执行调度控制操作
 const actionRoute = createRoute({
   method: "post",
@@ -201,7 +195,6 @@ const actionRoute = createRoute({
   },
 });
 
-app.use("/trigger", requirePermission("sys:job:action"));
 // 5. 手动创建测试任务 (演示用)
 const triggerRoute = createRoute({
   method: "post",
@@ -242,63 +235,64 @@ const triggerRoute = createRoute({
   },
 });
 
-// =================== 接口逻辑方法绑定 ===================
+app.use("/queues", requirePermission("sys:job:list"));
+app.use("/list", requirePermission("sys:job:list"));
+app.use("/detail", requirePermission("sys:job:list"));
+app.use("/action", requirePermission("sys:job:action"));
+app.use("/trigger", requirePermission("sys:job:action"));
 
-app.openapi(queuesRoute, async (c) => {
-  const result = await jobService.getQueues();
-  return c.json({ code: 0, data: result as any }, 200);
-});
-
-app.openapi(listRoute, async (c) => {
-  const queue = c.req.query("queue");
-  const status = c.req.query("status");
-  const page = Number(c.req.query("page") || 1);
-  const pageSize = Number(c.req.query("pageSize") || 10);
-
-  if (!queue || !status) {
-    throw new HTTPException(400, { message: "缺少必要查询参数: queue 或 status" });
-  }
-
-  const result = await jobService.getJobs(queue, status, page, pageSize);
-  return c.json({ code: 0, data: result as any }, 200);
-});
-
-app.openapi(detailRoute, async (c) => {
-  const queue = c.req.query("queue");
-  const jobId = c.req.query("jobId");
-
-  if (!queue || !jobId) {
-    throw new HTTPException(400, { message: "缺少必要查询参数: queue 或 jobId" });
-  }
-
-  try {
-    const result = await jobService.getJobDetail(queue, jobId);
+const routes = app
+  .openapi(queuesRoute, async (c) => {
+    const result = await jobService.getQueues();
     return c.json({ code: 0, data: result as any }, 200);
-  } catch (error: any) {
-    throw new HTTPException(400, { message: error.message || "获取任务明细失败" });
-  }
-});
+  })
+  .openapi(listRoute, async (c) => {
+    const queue = c.req.query("queue");
+    const status = c.req.query("status");
+    const page = Number(c.req.query("page") || 1);
+    const pageSize = Number(c.req.query("pageSize") || 10);
 
-app.openapi(actionRoute, async (c) => {
-  const { queue, jobId, action } = c.req.valid("json");
+    if (!queue || !status) {
+      throw new HTTPException(400, { message: "缺少必要查询参数: queue 或 status" });
+    }
 
-  try {
-    const result = await jobService.executeAction(queue, jobId || null, action);
-    return c.json({ code: 0, message: result.message }, 200);
-  } catch (error: any) {
-    throw new HTTPException(400, { message: error.message || "调度动作执行失败" });
-  }
-});
+    const result = await jobService.getJobs(queue, status, page, pageSize);
+    return c.json({ code: 0, data: result as any }, 200);
+  })
+  .openapi(detailRoute, async (c) => {
+    const queue = c.req.query("queue");
+    const jobId = c.req.query("jobId");
 
-app.openapi(triggerRoute, async (c) => {
-  const { queue, jobName, data } = c.req.valid("json");
+    if (!queue || !jobId) {
+      throw new HTTPException(400, { message: "缺少必要查询参数: queue 或 jobId" });
+    }
 
-  try {
-    const result = await jobService.addTestJob(queue, jobName, data);
-    return c.json({ code: 0, message: "测试任务成功压入调度队列", data: result as any }, 200);
-  } catch (error: any) {
-    throw new HTTPException(400, { message: error.message || "测试任务派发失败" });
-  }
-});
+    try {
+      const result = await jobService.getJobDetail(queue, jobId);
+      return c.json({ code: 0, data: result as any }, 200);
+    } catch (error: any) {
+      throw new HTTPException(400, { message: error.message || "获取任务明细失败" });
+    }
+  })
+  .openapi(actionRoute, async (c) => {
+    const { queue, jobId, action } = c.req.valid("json");
 
-export default app;
+    try {
+      const result = await jobService.executeAction(queue, jobId || null, action);
+      return c.json({ code: 0, message: result.message }, 200);
+    } catch (error: any) {
+      throw new HTTPException(400, { message: error.message || "调度动作执行失败" });
+    }
+  })
+  .openapi(triggerRoute, async (c) => {
+    const { queue, jobName, data } = c.req.valid("json");
+
+    try {
+      const result = await jobService.addTestJob(queue, jobName, data);
+      return c.json({ code: 0, message: "测试任务成功压入调度队列", data: result as any }, 200);
+    } catch (error: any) {
+      throw new HTTPException(400, { message: error.message || "测试任务派发失败" });
+    }
+  });
+
+export default routes;

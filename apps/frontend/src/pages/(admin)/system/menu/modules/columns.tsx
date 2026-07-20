@@ -7,7 +7,7 @@ import type {
   PermissionTreeNode,
   PermissionType,
 } from "@/service/api/permission";
-import { TYPE_COLOR, TYPE_LABEL } from "./constants";
+import { TYPE_LABEL } from "./constants";
 
 type MenuRecord = TableDataWithIndex<PermissionTreeNode>;
 /** 按钮权限列表字段（由 processNode 在运行时添加） */
@@ -18,12 +18,35 @@ interface CreateMenuColumnsOptions {
   onAddChild: (record: MenuRecord) => void;
   onDelete: (record: MenuRecord) => void;
   onEdit: (record: MenuRecord) => void;
+  translateType?: (value: string) => string;
+  getTypeColor?: (value: string) => string;
+  translateStatus?: (value: string) => string;
+  getStatusColor?: (value: string) => string;
 }
 
 export function createMenuColumns(options: CreateMenuColumnsOptions): MenuColumn[] {
-  const { onAddChild, onDelete, onEdit } = options;
+  const {
+    onAddChild,
+    onDelete,
+    onEdit,
+    translateType,
+    getTypeColor,
+    translateStatus,
+    getStatusColor,
+  } = options;
 
   return [
+    {
+      title: "排序",
+      dataIndex: "order",
+      key: "order",
+      width: 120,
+      render: (value: number | null) => (
+        <Tag color="cyan" className="font-mono">
+          {value ?? 0}
+        </Tag>
+      ),
+    },
     {
       title: "权限名称",
       dataIndex: "name",
@@ -43,9 +66,11 @@ export function createMenuColumns(options: CreateMenuColumnsOptions): MenuColumn
       dataIndex: "type",
       key: "type",
       width: 100,
-      render: (value: PermissionType) => (
-        <Tag color={TYPE_COLOR[value] as "blue" | "green"}>{TYPE_LABEL[value]}</Tag>
-      ),
+      render: (value: PermissionType) => {
+        const color = getTypeColor ? getTypeColor(value) : "grey";
+        const label = translateType ? translateType(value) : (TYPE_LABEL[value] ?? value);
+        return <Tag color={color as any}>{label}</Tag>;
+      },
     },
     {
       title: "按钮权限",
@@ -73,22 +98,24 @@ export function createMenuColumns(options: CreateMenuColumnsOptions): MenuColumn
       render: (value: string | null) => value || "-",
     },
     {
-      title: "排序",
-      dataIndex: "order",
-      key: "order",
-      width: 80,
-      render: (value: number | null) => value ?? 0,
-    },
-    {
       title: "状态",
       dataIndex: "status",
       key: "status",
       width: 90,
-      render: (value: string | null) => (
-        <Tag color={value === "disabled" ? "red" : "green"}>
-          {value === "disabled" ? "停用" : "启用"}
-        </Tag>
-      ),
+      render: (value: string | null) => {
+        const statusVal = value || "active";
+        const color = getStatusColor
+          ? getStatusColor(statusVal)
+          : statusVal === "disabled"
+            ? "red"
+            : "green";
+        const label = translateStatus
+          ? translateStatus(statusVal)
+          : statusVal === "disabled"
+            ? "停用"
+            : "启用";
+        return <Tag color={color as any}>{label}</Tag>;
+      },
     },
     {
       title: "创建时间",

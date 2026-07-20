@@ -7,7 +7,7 @@ import type { RoleListItem } from "@/service/api/role";
 import { roleApi } from "@/service/api/role/api";
 import { usePermissionTreeQuery } from "@/service/api/permission/hooks";
 import type { PermissionTreeNode } from "@/service/api/permission/types";
-import { DATA_SCOPE_OPTIONS } from "./constants";
+import { useDict } from "@/service/api/dict/hooks";
 
 interface RoleOperateDrawerProps {
   /** 编辑时的当前行数据。 */
@@ -53,6 +53,7 @@ const RoleOperateDrawer = ({
   submitting,
   visible,
 }: RoleOperateDrawerProps) => {
+  const { options: dataScopeOptions } = useDict("sys_data_scope");
   const formApiRef = useRef<FormApi | null>(null);
   const [permissionIds, setPermissionIds] = useState<string[]>([]);
   const [loadingDetail, setLoadingDetail] = useState(false);
@@ -73,14 +74,14 @@ const RoleOperateDrawer = ({
     if (!api) return;
 
     if (operateType === "edit" && editingData) {
-      if (editingData.permissionIds) {
+      if ((editingData as any).permissionIds) {
         api.setValues({
           name: editingData.name,
           code: editingData.code,
           description: editingData.description ?? "",
           dataScope: editingData.dataScope,
         });
-        setPermissionIds(editingData.permissionIds.map(String));
+        setPermissionIds(((editingData as any).permissionIds as number[]).map(String));
       } else {
         setLoadingDetail(true);
         roleApi
@@ -156,7 +157,7 @@ const RoleOperateDrawer = ({
           <Form.Select
             field="dataScope"
             label="数据范围"
-            optionList={DATA_SCOPE_OPTIONS}
+            optionList={dataScopeOptions}
             placeholder="请选择数据范围"
             rules={[{ required: true, message: "请选择数据范围" }]}
             style={{ width: "100%" }}

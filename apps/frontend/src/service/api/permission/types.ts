@@ -1,76 +1,33 @@
-/** 权限/菜单类型。 */
-export type PermissionType = "menu" | "button" | "catalogue";
+/**
+ * Permission 模块类型定义（从后端 Hono RPC 自动推导）
+ */
 
-/** 权限/菜单列表项。 */
-export interface PermissionListItem {
-  id: number;
-  code: string;
-  name: string;
-  type: PermissionType;
-  parentId: number | null;
-  routeName?: string | null;
-  routePath?: string | null;
-  component?: string | null;
-  pathParam?: string | null;
-  i18nKey?: string | null;
-  order?: number;
-  iconType?: string;
-  icon?: string | null;
-  status?: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import type { client, InferResponseType } from "@/service/client";
 
-/** 新增参数。 */
-export interface PermissionCreateParams {
-  code: string;
-  name: string;
-  type: PermissionType;
-  parentId?: number | null;
-  routeName?: string | null;
-  routePath?: string | null;
-  component?: string | null;
-  pathParam?: string | null;
-  i18nKey?: string | null;
-  order?: number;
-  iconType?: string;
-  icon?: string | null;
-  status?: string;
-  buttons?: { code: string; name: string }[];
-}
+type PermissionTreeEnvelope = InferResponseType<typeof client.api.permission.tree.$get>;
 
-/** 更新参数。 */
-export interface PermissionUpdateParams {
-  code: string;
-  name: string;
-  type: PermissionType;
-  parentId?: number | null;
-  routeName?: string | null;
-  routePath?: string | null;
-  component?: string | null;
-  pathParam?: string | null;
-  i18nKey?: string | null;
-  order?: number;
-  iconType?: string;
-  icon?: string | null;
-  status?: string;
-}
+/** 权限/菜单列表响应 */
+export type PermissionTreeResponse = PermissionTreeEnvelope extends { data: infer D } ? D : never;
+export type PermissionListItem = PermissionTreeResponse extends (infer I)[] ? I : never;
+export type PermissionType = PermissionListItem["type"];
 
-/** 树形节点（含 children）。 */
+/** 树形节点（含 children） */
 export interface PermissionTreeNode extends PermissionListItem {
   children?: PermissionTreeNode[];
 }
 
-/** 权限/菜单列表查询参数（适配 useTable）。 */
+/** 新增与修改参数 */
+export type PermissionCreateParams = Parameters<
+  typeof client.api.permission.create.$post
+>[0]["json"];
+export type PermissionUpdateParams = Parameters<
+  (typeof client.api.permission)[":id"]["$put"]
+>[0]["json"];
+
 export interface PermissionSearchParams {
-  /** 当前页码（useTable 内部使用）。 */
   current: number;
-  /** 每页条数（useTable 内部使用）。 */
   size: number;
-  /** 权限名称模糊搜索。 */
   name?: string;
-  /** 权限编码模糊搜索。 */
   code?: string;
-  /** 类型筛选。 */
   type?: PermissionType;
 }

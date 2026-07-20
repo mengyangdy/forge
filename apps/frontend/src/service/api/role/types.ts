@@ -1,52 +1,35 @@
-/** 角色数据范围。 */
-export type RoleDataScope = "all" | "dept_child" | "dept" | "self" | "custom";
+/**
+ * Role 模块类型定义（从后端 Hono RPC 自动推导）
+ */
 
-/** 角色列表项。 */
-export interface RoleListItem {
-  id: number;
-  code: string;
-  name: string;
-  description: string | null;
-  dataScope: string;
-  createdAt: string;
-  updatedAt: string;
-  permissionIds?: number[];
-}
+import type { client, InferResponseType } from "@/service/client";
 
-/** 角色列表响应。 */
-export interface RoleListResponse {
-  list: RoleListItem[];
-  total: number;
-}
+type RoleListEnvelope = InferResponseType<typeof client.api.role.list.$get>;
 
-/** 角色搜索参数。 */
+/** 角色列表响应 */
+export type RoleListResponse = RoleListEnvelope extends { data: infer D } ? D : never;
+
+/** 角色列表项 */
+export type RoleListItem = RoleListResponse extends { list: (infer Item)[] } ? Item : never;
+
+/** 角色数据范围 */
+export type RoleDataScope = RoleListItem["dataScope"];
+
+/** 角色新增参数 */
+export type RoleCreateParams = Parameters<typeof client.api.role.create.$post>[0]["json"];
+
+/** 角色更新参数 */
+export type RoleUpdateParams = Parameters<(typeof client.api.role)[":id"]["$put"]>[0]["json"];
+
+/** 角色详情 */
+export type RoleDetailResponse =
+  InferResponseType<(typeof client.api.role)[":id"]["$get"]> extends { data: infer D } ? D : never;
+
+/** 角色搜索参数 */
 export interface RoleSearchParams {
   current: number;
   size: number;
   name?: string;
   code?: string;
-  dataScope?: RoleDataScope;
-}
-
-/** 角色新增参数。 */
-export interface RoleCreateParams {
-  code: string;
-  name: string;
-  description?: string | null;
-  dataScope?: RoleDataScope;
-  permissionIds?: number[];
-}
-
-/** 角色更新参数。 */
-export interface RoleUpdateParams {
-  code: string;
-  name: string;
-  description?: string | null;
-  dataScope?: RoleDataScope;
-  permissionIds?: number[];
-}
-
-/** 角色详情。 */
-export interface RoleDetailResponse extends RoleListItem {
-  permissionIds: number[];
+  dataScope?: string;
 }

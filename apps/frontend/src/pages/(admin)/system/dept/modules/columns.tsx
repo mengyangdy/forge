@@ -11,10 +11,12 @@ interface CreateDeptColumnsOptions {
   onAddChild: (record: DeptRecord) => void;
   onDelete: (record: DeptRecord) => void;
   onEdit: (record: DeptRecord) => void;
+  translateStatus?: (value: string) => string;
+  getStatusColor?: (value: string) => string;
 }
 
 export function createDeptColumns(options: CreateDeptColumnsOptions): DeptColumn[] {
-  const { onAddChild, onDelete, onEdit } = options;
+  const { onAddChild, onDelete, onEdit, translateStatus, getStatusColor } = options;
 
   return [
     {
@@ -36,11 +38,15 @@ export function createDeptColumns(options: CreateDeptColumnsOptions): DeptColumn
       dataIndex: "status",
       key: "status",
       width: 100,
-      render: (value: DeptStatus) => (
-        <Tag color={value === "active" ? "green" : "red"}>
-          {value === "active" ? "启用" : "停用"}
-        </Tag>
-      ),
+      render: (value: DeptStatus) => {
+        const color = getStatusColor ? getStatusColor(value) : value === "active" ? "green" : "red";
+        const label = translateStatus
+          ? translateStatus(value)
+          : value === "active"
+            ? "启用"
+            : "停用";
+        return <Tag color={color as any}>{label}</Tag>;
+      },
     },
     {
       title: "创建时间",

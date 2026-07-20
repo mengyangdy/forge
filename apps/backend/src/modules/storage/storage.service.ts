@@ -114,7 +114,8 @@ export class StorageService {
       const size = stat.size;
 
       // 3. 调用当前配置的通用存储引擎进行上传
-      const provider = StorageFactory.getProvider();
+      const config = await this.getStorageConfig();
+      const provider = StorageFactory.getProvider(config);
       const url = await provider.uploadFile(uniqueFilename, buffer);
 
       // 4. 将成功上传的文件记录到 PG 数据库，便于下一次“秒传”
@@ -138,7 +139,7 @@ export class StorageService {
           url,
           size,
           mimeType,
-          provider: env.UPLOAD_PROVIDER || "local",
+          provider: config.provider || "local",
         })
         .returning();
 
@@ -158,6 +159,82 @@ export class StorageService {
       }
       throw err;
     }
+  }
+
+  // 4. 查询存储文件列表
+  async listFiles(filename?: string) {
+    const { like, desc } = await import("drizzle-orm");
+    const where = filename ? like(sysFiles.filename, `%${filename}%`) : undefined;
+    return await db.select().from(sysFiles).where(where).orderBy(desc(sysFiles.createdAt));
+  }
+
+  // 5. 删除文件记录
+  async deleteFile(id: number) {
+    const [file] = await db.select().from(sysFiles).where(eq(sysFiles.id, id)).limit(1);
+    if (!file) {
+      throw new Error("文件记录不存在或已被删除");
+    }
+    await db.delete(sysFiles).where(eq(sysFiles.id, id));
+    return file;
+  }
+
+  // 6. 读取当前动态存储引擎配置
+  async getStorageConfig() {
+    const { sysConfigs } = await import("@forge/shared");
+    const STORAGE_CONFIG_KEY = "sys:storage:config";
+
+    try {
+      const [config] = await db
+        .select()
+        .from(sysConfigs)
+        .where(eq(sysConfigs.configKey, STORAGE_CONFIG_KEY))
+        .limit(1);
+
+      if (config && config.configValue) {
+        return JSON.parse(config.configValue);
+      }
+    } catch {}
+
+    // 回退读取 .env
+    return {
+      provider: (env.UPLOAD_PROVIDER as any) || "local",
+      aliossAccessKeyId: env.ALIOSS_ACCESS_KEY_ID || "",
+      aliossAccessKeySecret: env.ALIOSS_ACCESS_KEY_SECRET || "",
+      aliossBucket: env.ALIOSS_BUCKET || "",
+      aliossRegion: env.ALIOSS_REGION || "oss-cn-hangzhou",
+      cosSecretId: "",
+      cosSecretKey: "",
+      cosBucket: "",
+      cosRegion: "ap-guangzhou",
+    };
+  }
+
+  // 7. 保存/更新动态存储引擎配置
+  async saveStorageConfig(data: any) {
+    const { sysConfigs } = await import("@forge/shared");
+    const STORAGE_CONFIG_KEY = "sys:storage:config";
+    const configValue = JSON.stringify(data);
+
+    const [existing] = await db
+      .select()
+      .from(sysConfigs)
+      .where(eq(sysConfigs.configKey, STORAGE_CONFIG_KEY))
+      .limit(1);
+
+    if (existing) {
+      await db
+        .update(sysConfigs)
+        .set({ configValue, updatedAt: new Date() })
+        .where(eq(sysConfigs.configKey, STORAGE_CONFIG_KEY));
+    } else {
+      await db.insert(sysConfigs).values({
+        configKey: STORAGE_CONFIG_KEY,
+        configValue,
+        remark: "系统存储引擎控制台动态配置",
+      });
+    }
+
+    return data;
   }
 }
 

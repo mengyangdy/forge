@@ -21,7 +21,7 @@ const UserAvatar = () => {
 
   const location = useLocation();
 
-  const fullPath = location.href;
+  const fullPath = location.pathname + (location.searchStr || "");
 
   function logout() {
     showSemiConfirmModal({

@@ -12,10 +12,12 @@ type RoleColumn = SemiTableColumn<RoleRecord>;
 interface CreateRoleColumnsOptions {
   onDelete: (record: RoleRecord) => void;
   onEdit: (record: RoleRecord) => void;
+  translateScope?: (value: string) => string;
+  getScopeColor?: (value: string) => string;
 }
 
 export function createRoleColumns(options: CreateRoleColumnsOptions): RoleColumn[] {
-  const { onDelete, onEdit } = options;
+  const { onDelete, onEdit, translateScope, getScopeColor } = options;
 
   return [
     {
@@ -41,7 +43,13 @@ export function createRoleColumns(options: CreateRoleColumnsOptions): RoleColumn
       dataIndex: "dataScope",
       key: "dataScope",
       width: 140,
-      render: (value: string) => <Tag>{DATA_SCOPE_LABEL[value as RoleDataScope] ?? value}</Tag>,
+      render: (value: string) => {
+        const color = getScopeColor ? getScopeColor(value) : "grey";
+        const label = translateScope
+          ? translateScope(value)
+          : (DATA_SCOPE_LABEL[value as RoleDataScope] ?? value);
+        return <Tag color={color as any}>{label}</Tag>;
+      },
     },
     {
       title: "备注",

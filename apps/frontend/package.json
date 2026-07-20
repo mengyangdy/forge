@@ -81,6 +81,7 @@
     "dayjs": "^1.11.21",
     "defu": "catalog:utils",
     "embla-carousel-react": "^8.6.0",
+    "hono": "catalog:",
     "i18next": "catalog:i18n",
     "input-otp": "^1.4.2",
     "json5": "catalog:",
@@ -104,6 +105,7 @@
   "devDependencies": {
     "@babel/core": "catalog:dev",
     "@babel/template": "catalog:dev",
+    "@forge/backend": "workspace:*",
     "@iconify/json": "catalog:ui-shared",
     "@iconify/types": "catalog:ui-shared",
     "@rolldown/plugin-babel": "catalog:dev",

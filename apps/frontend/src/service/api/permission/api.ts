@@ -1,35 +1,32 @@
-import { request } from "@/service/request";
+/**
+ * Permission API 模块
+ *
+ * 基于 Hono RPC 客户端推导
+ */
+
+import { client, unwrap } from "@/service/client";
 
 import type { PermissionCreateParams, PermissionTreeNode, PermissionUpdateParams } from "./types";
 
-const URLS = {
-  TREE: "/api/permission/tree",
-  CREATE: "/api/permission/create",
-  DETAIL: "/api/permission",
-} as const;
-
 export const permissionApi = {
-  /** 层级树。 */
-  tree: () =>
-    request<PermissionTreeNode[]>({ method: "get", url: URLS.TREE }).then((res) => res.data),
+  /** 层级树 */
+  tree: () => unwrap(client.api.permission.tree.$get()) as Promise<PermissionTreeNode[]>,
 
-  /** 创建菜单/权限。 */
+  /** 创建菜单/权限 */
   create: (data: PermissionCreateParams) =>
-    request({ method: "post", url: URLS.CREATE, data }).then((res) => res.data),
+    unwrap(client.api.permission.create.$post({ json: data })),
 
-  /** 更新菜单/权限。 */
+  /** 更新菜单/权限 */
   update: (id: number, data: PermissionUpdateParams) =>
-    request({ method: "put", url: `${URLS.DETAIL}/${id}`, data }).then((res) => res.data),
+    unwrap(client.api.permission[":id"].$put({ param: { id: String(id) }, json: data })),
 
-  /** 删除菜单/权限。 */
+  /** 删除菜单/权限 */
   remove: (id: number) =>
-    request({ method: "delete", url: `${URLS.DETAIL}/${id}` }).then((res) => res.data),
+    unwrap(client.api.permission[":id"].$delete({ param: { id: String(id) } })),
 
-  /** 批量删除菜单/权限。 */
+  /** 批量删除菜单/权限 */
   batchRemove: (ids: number[]) =>
-    request({ method: "post", url: `${URLS.DETAIL}/batch-delete`, data: { ids } }).then(
-      (res) => res.data,
-    ),
+    unwrap(client.api.permission["batch-delete"].$post({ json: { ids } })),
 };
 
 export const permissionKeys = {

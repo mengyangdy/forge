@@ -19,12 +19,19 @@ import type {
 } from "@/service/api/role";
 
 import { createRoleColumns } from "./columns";
-import { DATA_SCOPE_OPTIONS, ROLE_TABLE_SCROLL_X } from "./constants";
+import { ROLE_TABLE_SCROLL_X } from "./constants";
 import RoleOperateDrawer from "./RoleOperateDrawer";
+import { useDict } from "@/service/api/dict/hooks";
 
 type RoleRecord = TableDataWithIndex<RoleListItem>;
 
 const RolePage = () => {
+  const {
+    options: dataScopeOptions,
+    translate: translateScope,
+    getTagColor: getScopeColor,
+  } = useDict("sys_data_scope");
+
   const editHandlerRef = useRef<(record: RoleRecord) => void>(() => {});
   const deleteHandlerRef = useRef<(record: RoleRecord) => void>(() => {});
 
@@ -38,6 +45,8 @@ const RolePage = () => {
       createRoleColumns({
         onDelete: (record) => deleteHandlerRef.current(record),
         onEdit: (record) => editHandlerRef.current(record),
+        translateScope,
+        getScopeColor,
       }),
     queryHook: useRoleQuery,
   });
@@ -90,7 +99,7 @@ const RolePage = () => {
           <Form.Select
             field="dataScope"
             label="数据范围"
-            optionList={DATA_SCOPE_OPTIONS}
+            optionList={dataScopeOptions}
             placeholder="请选择数据范围"
             showClear
             style={{ width: "100%" }}

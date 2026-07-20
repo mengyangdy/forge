@@ -6,8 +6,14 @@
   "license": "ISC",
   "author": "",
   "type": "module",
-  "main": "index.js",
-  "types": "dist/index.d.mts",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsdown src/index.ts --clean",

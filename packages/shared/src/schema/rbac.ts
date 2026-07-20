@@ -273,6 +273,7 @@ export const operationLogs = pgTable("operation_logs", {
   module: text("module"),
   action: text("action"),
   requestParams: text("request_params"),
+  responseData: text("response_data"),
   status: integer("status").notNull(),
   duration: integer("duration").notNull(),
   errorMessage: text("error_message"),
@@ -296,6 +297,8 @@ export const accessLogs = pgTable("access_logs", {
   ip: text("ip"),
   method: text("method").notNull(),
   url: text("url").notNull(),
+  requestParams: text("request_params"),
+  responseData: text("response_data"),
   status: integer("status").notNull(),
   duration: integer("duration").notNull(),
   userAgent: text("user_agent"),
@@ -315,6 +318,7 @@ export const dictTypes = pgTable("sys_dict_type", {
   name: text("name").notNull(),
   type: text("type").notNull().unique(), // e.g. "sys_user_sex"
   status: text("status").default("active").notNull(), // 'active' | 'disabled'
+  isSystem: text("is_system").default("N").notNull(), // 是否系统内置 'Y' | 'N'
   description: text("description"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -328,6 +332,8 @@ export const dictData = pgTable("sys_dict_data", {
   value: text("value").notNull(), // '1'
   sort: integer("sort").default(0).notNull(),
   listClass: text("list_class"), // 'primary' | 'success' | 'warning' | 'danger' | 'info'
+  isDefault: text("is_default").default("N").notNull(), // 是否默认选中 'Y' | 'N'
+  cssClass: text("css_class"), // 自定义 CSS 样式类名
   status: text("status").default("active").notNull(), // 'active' | 'disabled'
   description: text("description"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -371,6 +377,19 @@ export const sysFiles = pgTable("sys_files", {
 
 export type SysFile = typeof sysFiles.$inferSelect;
 export type NewSysFile = typeof sysFiles.$inferInsert;
+
+// 系统动态配置表 (用于存储引擎配置、系统设置等)
+export const sysConfigs = pgTable("sys_config", {
+  id: serial("id").primaryKey(),
+  configKey: text("config_key").notNull().unique(), // e.g. "sys:storage:config"
+  configValue: text("config_value").notNull(), // JSON 字符串
+  remark: text("remark"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export type SysConfig = typeof sysConfigs.$inferSelect;
+export type NewSysConfig = typeof sysConfigs.$inferInsert;
 
 export const insertSysFileSchema = createInsertSchema(sysFiles);
 export const selectSysFileSchema = createSelectSchema(sysFiles);

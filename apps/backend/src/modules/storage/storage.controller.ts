@@ -9,10 +9,7 @@ const app = new OpenAPIHono();
 // 挂载全局登录鉴权中间件
 app.use("*", authMiddleware);
 
-// =================== OpenAPI 路由描述定义 ===================
-
 // 1. 大文件上传预检接口
-app.use("/check", requirePermission("sys:file:upload"));
 const checkRoute = createRoute({
   method: "get",
   path: "/check",
@@ -47,7 +44,6 @@ const checkRoute = createRoute({
 });
 
 // 2. 分片上传接口 (使用 Form 表单多部分数据)
-app.use("/upload-chunk", requirePermission("sys:file:upload"));
 const uploadChunkRoute = createRoute({
   method: "post",
   path: "/upload-chunk",
@@ -85,7 +81,6 @@ const uploadChunkRoute = createRoute({
 });
 
 // 3. 文件合并接口
-app.use("/merge", requirePermission("sys:file:upload"));
 const mergeRoute = createRoute({
   method: "post",
   path: "/merge",
@@ -130,73 +125,229 @@ const mergeRoute = createRoute({
   },
 });
 
-// =================== 路由处理器绑定 ===================
-
-app.openapi(checkRoute, async (c) => {
-  const hash = c.req.query("hash");
-  if (!hash) {
-    throw new HTTPException(400, { message: "缺少 query.hash 参数" });
-  }
-
-  const result = await storageService.checkFile(hash);
-  return c.json({ code: 0, data: result }, 200);
-});
-
-app.openapi(uploadChunkRoute, async (c) => {
-  const body = await c.req.parseBody();
-  const hash = body.hash as string;
-  const indexStr = body.index as string;
-  const file = body.file;
-
-  if (!hash || !indexStr || !file) {
-    throw new HTTPException(400, { message: "缺少必要参数: hash, index 或 file" });
-  }
-
-  const index = Number(indexStr);
-  if (isNaN(index)) {
-    throw new HTTPException(400, { message: "参数 index 必须是有效数字" });
-  }
-
-  // 处理文件，转换为 Buffer
-  let buffer: Buffer;
-  try {
-    if (file instanceof File) {
-      const arrayBuffer = await file.arrayBuffer();
-      buffer = Buffer.from(arrayBuffer);
-    } else if (typeof file === "string") {
-      buffer = Buffer.from(file);
-    } else {
-      const anyFile = file as any;
-      if (anyFile.arrayBuffer) {
-        buffer = Buffer.from(await anyFile.arrayBuffer());
-      } else {
-        throw new Error("Invalid file content type");
-      }
-    }
-  } catch {
-    throw new HTTPException(400, { message: "解析文件二进制失败" });
-  }
-
-  await storageService.saveChunk(hash, index, buffer);
-  return c.json({ code: 0, message: `分片 ${index} 写入暂存区成功` }, 200);
-});
-
-app.openapi(mergeRoute, async (c) => {
-  const { hash, filename, totalChunks } = c.req.valid("json");
-
-  try {
-    const fileRecord = await storageService.mergeChunks(hash, filename, totalChunks);
-    return c.json(
-      {
-        code: 0,
-        message: "大文件合并与传输上传成功",
-        data: fileRecord as any,
+// 4. 查询文件列表接口
+const listRoute = createRoute({
+  method: "get",
+  path: "/list",
+  summary: "查询文件列表",
+  tags: ["存储引擎 Storage"],
+  security: [{ BearerAuth: [] }],
+  request: {
+    query: z.object({
+      filename: z.string().openapi({ description: "文件名模糊搜索" }).optional(),
+    }),
+  },
+  responses: {
+    200: {
+      content: {
+        "application/json": {
+          schema: z.object({
+            code: z.number(),
+            data: z.array(
+              z.object({
+                id: z.number(),
+                hash: z.string(),
+                filename: z.string(),
+                url: z.string(),
+                size: z.number(),
+                mimeType: z.string().nullable(),
+                provider: z.string(),
+                createdAt: z.any(),
+              }),
+            ),
+          }),
+        },
       },
-      200,
-    );
-  } catch (error: any) {
-    throw new HTTPException(400, { message: error.message || "分片合并失败，请核实分片完整性" });
-  }
+      description: "成功返回文件列表",
+    },
+  },
 });
 
-export default app;
+// 5. 删除文件接口
+const deleteRoute = createRoute({
+  method: "delete",
+  path: "/delete/{id}",
+  summary: "删除存储文件记录",
+  tags: ["存储引擎 Storage"],
+  security: [{ BearerAuth: [] }],
+  request: {
+    params: z.object({
+      id: z.string().openapi({ description: "文件 ID" }),
+    }),
+  },
+  responses: {
+    200: {
+      content: {
+        "application/json": {
+          schema: z.object({
+            code: z.number(),
+            message: z.string(),
+          }),
+        },
+      },
+      description: "删除文件成功",
+    },
+  },
+});
+
+// 6. 获取动态存储配置接口
+const getConfigRoute = createRoute({
+  method: "get",
+  path: "/config",
+  summary: "获取当前动态存储配置",
+  tags: ["存储引擎 Storage"],
+  security: [{ BearerAuth: [] }],
+  responses: {
+    200: {
+      content: {
+        "application/json": {
+          schema: z.object({
+            code: z.number(),
+            data: z.any(),
+          }),
+        },
+      },
+      description: "成功返回存储配置",
+    },
+  },
+});
+
+// 7. 保存/更新动态存储配置接口
+const saveConfigRoute = createRoute({
+  method: "post",
+  path: "/config/save",
+  summary: "更新动态存储引擎配置",
+  tags: ["存储引擎 Storage"],
+  security: [{ BearerAuth: [] }],
+  request: {
+    body: {
+      content: {
+        "application/json": {
+          schema: z.object({
+            provider: z.string(),
+            aliossAccessKeyId: z.string().optional(),
+            aliossAccessKeySecret: z.string().optional(),
+            aliossBucket: z.string().optional(),
+            aliossRegion: z.string().optional(),
+            cosSecretId: z.string().optional(),
+            cosSecretKey: z.string().optional(),
+            cosBucket: z.string().optional(),
+            cosRegion: z.string().optional(),
+          }),
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      content: {
+        "application/json": {
+          schema: z.object({
+            code: z.number(),
+            message: z.string(),
+          }),
+        },
+      },
+      description: "更新配置成功",
+    },
+  },
+});
+
+app.use("/check", requirePermission("sys:file:upload"));
+app.use("/upload-chunk", requirePermission("sys:file:upload"));
+app.use("/merge", requirePermission("sys:file:upload"));
+app.use("/config", requirePermission("sys:file:upload"));
+app.use("/config/save", requirePermission("sys:file:upload"));
+app.use("/list", requirePermission("sys:file:list"));
+app.use("/delete/:id", requirePermission("sys:file:delete"));
+
+const routes = app
+  .openapi(checkRoute, async (c) => {
+    const hash = c.req.query("hash");
+    if (!hash) {
+      throw new HTTPException(400, { message: "缺少 query.hash 参数" });
+    }
+
+    const result = await storageService.checkFile(hash);
+    return c.json({ code: 0, data: result }, 200);
+  })
+  .openapi(uploadChunkRoute, async (c) => {
+    const body = await c.req.parseBody();
+    const hash = body.hash as string;
+    const indexStr = body.index as string;
+    const file = body.file;
+
+    if (!hash || !indexStr || !file) {
+      throw new HTTPException(400, { message: "缺少必要参数: hash, index 或 file" });
+    }
+
+    const index = Number(indexStr);
+    if (isNaN(index)) {
+      throw new HTTPException(400, { message: "参数 index 必须是有效数字" });
+    }
+
+    let buffer: Buffer;
+    try {
+      if (file instanceof File) {
+        const arrayBuffer = await file.arrayBuffer();
+        buffer = Buffer.from(arrayBuffer);
+      } else if (typeof file === "string") {
+        buffer = Buffer.from(file);
+      } else {
+        const anyFile = file as any;
+        if (anyFile.arrayBuffer) {
+          buffer = Buffer.from(await anyFile.arrayBuffer());
+        } else {
+          throw new Error("Invalid file content type");
+        }
+      }
+    } catch {
+      throw new HTTPException(400, { message: "解析文件二进制失败" });
+    }
+
+    await storageService.saveChunk(hash, index, buffer);
+    return c.json({ code: 0, message: `分片 ${index} 写入暂存区成功` }, 200);
+  })
+  .openapi(mergeRoute, async (c) => {
+    const { hash, filename, totalChunks } = c.req.valid("json");
+
+    try {
+      const fileRecord = await storageService.mergeChunks(hash, filename, totalChunks);
+      return c.json(
+        {
+          code: 0,
+          message: "大文件合并与传输上传成功",
+          data: fileRecord as any,
+        },
+        200,
+      );
+    } catch (error: any) {
+      throw new HTTPException(400, { message: error.message || "分片合并失败，请核实分片完整性" });
+    }
+  })
+  .openapi(getConfigRoute, async (c) => {
+    const config = await storageService.getStorageConfig();
+    return c.json({ code: 0, data: config }, 200);
+  })
+  .openapi(saveConfigRoute, async (c) => {
+    const body = c.req.valid("json");
+    await storageService.saveStorageConfig(body);
+    return c.json({ code: 0, message: "存储引擎配置保存成功！后续大文件将生效新引擎。" }, 200);
+  })
+  .openapi(listRoute, async (c) => {
+    const filename = c.req.query("filename");
+    const list = await storageService.listFiles(filename);
+    return c.json({ code: 0, data: list as any }, 200);
+  })
+  .openapi(deleteRoute, async (c) => {
+    const idStr = c.req.param("id");
+    const id = Number(idStr);
+    if (isNaN(id)) {
+      throw new HTTPException(400, { message: "无效的文件 ID" });
+    }
+
+    await storageService.deleteFile(id);
+    return c.json({ code: 0, message: "文件删除成功" }, 200);
+  });
+
+export default routes;

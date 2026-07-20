@@ -28,7 +28,7 @@ import { queryClient } from "@/service/queryClient";
 
 import MenuItemEdit from "./AddMenu";
 import { createMenuColumns } from "./columns";
-import { TYPE_OPTIONS } from "./constants";
+import { useDict } from "@/service/api/dict/hooks";
 
 type MenuRecord = PermissionTreeNode;
 
@@ -60,6 +60,13 @@ function flattenPermissionTree(nodes: PermissionTreeNode[]): PermissionListItem[
 }
 
 const MenuPage = () => {
+  const {
+    options: typeOptions,
+    translate: translateType,
+    getTagColor: getTypeColor,
+  } = useDict("sys_permission_type");
+  const { translate: translateStatus, getTagColor: getStatusColor } = useDict("sys_status");
+
   const addChildHandlerRef = useRef<(record: MenuRecord) => void>(() => {});
   const editHandlerRef = useRef<(record: MenuRecord) => void>(() => {});
   const deleteHandlerRef = useRef<(record: MenuRecord) => void>(() => {});
@@ -75,6 +82,10 @@ const MenuPage = () => {
         onAddChild: (record) => addChildHandlerRef.current(record),
         onDelete: (record) => deleteHandlerRef.current(record),
         onEdit: (record) => editHandlerRef.current(record),
+        translateType,
+        getTypeColor,
+        translateStatus,
+        getStatusColor,
       }),
     queryHook: usePermissionTreeTableQuery,
     queryOptions: { placeholderData: keepPreviousData },
@@ -89,14 +100,19 @@ const MenuPage = () => {
     function processNode(node: PermissionTreeNode): MenuTableRecord {
       const children = node.children || [];
       const buttons = children.filter((child) => child.type === "button");
-      const subMenus = children.filter((child) => child.type !== "button");
+      const subMenus = children
+        .filter((child) => child.type !== "button")
+        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
       return {
         ...node,
         buttonList: buttons,
         children: subMenus.length > 0 ? subMenus.map(processNode) : undefined,
       };
     }
-    return (data ?? []).map(processNode);
+    return (data ?? [])
+      .slice()
+      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+      .map(processNode);
   }, [data]);
   const flatTreeData = useMemo(() => flattenPermissionTree(permissionTree ?? []), [permissionTree]);
 
@@ -137,11 +153,11 @@ const MenuPage = () => {
     };
 
     if (operateType === "add") {
-      const result = await permissionApi.create(payload as PermissionCreateParams);
-      Toast.success(result.message);
+      const res = await permissionApi.create(payload as PermissionCreateParams);
+      Toast.success(res.message || "新增菜单成功");
     } else if (editingData) {
-      const result = await permissionApi.update(editingData.id, payload as PermissionUpdateParams);
-      Toast.success(result.message);
+      const res = await permissionApi.update(editingData.id, payload as PermissionUpdateParams);
+      Toast.success(res.message || "修改菜单成功");
     }
     await queryClient.invalidateQueries({ queryKey: permissionKeys.all });
   });
@@ -154,8 +170,8 @@ const MenuPage = () => {
   // oxlint-disable-next-line unicorn/consistent-function-scoping
   async function handleSingleDelete(record: MenuRecord) {
     try {
-      const result = await permissionApi.remove(record.id);
-      Toast.success(result.message);
+      const res = await permissionApi.remove(record.id);
+      Toast.success(res.message || "删除菜单成功");
       await queryClient.invalidateQueries({ queryKey: permissionKeys.all });
     } catch (error) {
       Toast.error(error instanceof Error ? error.message : "删除失败");
@@ -164,8 +180,8 @@ const MenuPage = () => {
 
   async function handleBatchDelete() {
     try {
-      await permissionApi.batchRemove(checkedRowKeys.map(Number));
-      Toast.success("菜单权限批量删除成功");
+      const res = await permissionApi.batchRemove(checkedRowKeys.map(Number));
+      Toast.success(res.message || "菜单权限批量删除成功");
       setCheckedRowKeys([]);
       await queryClient.invalidateQueries({ queryKey: permissionKeys.all });
     } catch (error) {
@@ -197,7 +213,7 @@ const MenuPage = () => {
           <Form.Select
             field="type"
             label="类型"
-            optionList={TYPE_OPTIONS}
+            optionList={typeOptions}
             placeholder="请选择类型"
             showClear
             style={{ width: "100%" }}

@@ -8,379 +8,550 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from "./../../pages/__root";
-import { Route as adminLayoutRouteImport } from "./../../pages/(admin)/layout";
-import { Route as IndexRouteImport } from "./../../pages/index";
-import { Route as errors500RouteImport } from "./../../pages/(errors)/500";
-import { Route as errors404RouteImport } from "./../../pages/(errors)/404";
-import { Route as errors403RouteImport } from "./../../pages/(errors)/403";
-import { Route as authLoginOutRouteImport } from "./../../pages/(auth)/login-out";
-import { Route as authLoginLayoutRouteImport } from "./../../pages/(auth)/login/layout";
-import { Route as adminSystemLayoutRouteImport } from "./../../pages/(admin)/system/layout";
-import { Route as authLoginIndexRouteImport } from "./../../pages/(auth)/login/index";
-import { Route as adminSystemIndexRouteImport } from "./../../pages/(admin)/system/index";
-import { Route as adminHomeIndexRouteImport } from "./../../pages/(admin)/home/index";
-import { Route as authLoginResetPwdIndexRouteImport } from "./../../pages/(auth)/login/reset-pwd/index";
-import { Route as authLoginRegisterIndexRouteImport } from "./../../pages/(auth)/login/register/index";
-import { Route as authLoginCodeLoginIndexRouteImport } from "./../../pages/(auth)/login/code-login/index";
-import { Route as adminSystemUserIndexRouteImport } from "./../../pages/(admin)/system/user/index";
-import { Route as adminSystemRoleIndexRouteImport } from "./../../pages/(admin)/system/role/index";
-import { Route as adminSystemMenuIndexRouteImport } from "./../../pages/(admin)/system/menu/index";
-import { Route as adminSystemDeptIndexRouteImport } from "./../../pages/(admin)/system/dept/index";
+import { Route as rootRouteImport } from './../../pages/__root'
+import { Route as adminLayoutRouteImport } from './../../pages/(admin)/layout'
+import { Route as IndexRouteImport } from './../../pages/index'
+import { Route as errors500RouteImport } from './../../pages/(errors)/500'
+import { Route as errors404RouteImport } from './../../pages/(errors)/404'
+import { Route as errors403RouteImport } from './../../pages/(errors)/403'
+import { Route as authLoginOutRouteImport } from './../../pages/(auth)/login-out'
+import { Route as authLoginLayoutRouteImport } from './../../pages/(auth)/login/layout'
+import { Route as adminSystemLayoutRouteImport } from './../../pages/(admin)/system/layout'
+import { Route as authLoginIndexRouteImport } from './../../pages/(auth)/login/index'
+import { Route as adminSystemIndexRouteImport } from './../../pages/(admin)/system/index'
+import { Route as adminStorageIndexRouteImport } from './../../pages/(admin)/storage/index'
+import { Route as adminMonitorIndexRouteImport } from './../../pages/(admin)/monitor/index'
+import { Route as adminLogIndexRouteImport } from './../../pages/(admin)/log/index'
+import { Route as adminHomeIndexRouteImport } from './../../pages/(admin)/home/index'
+import { Route as adminDictIndexRouteImport } from './../../pages/(admin)/dict/index'
+import { Route as authLoginResetPwdIndexRouteImport } from './../../pages/(auth)/login/reset-pwd/index'
+import { Route as authLoginRegisterIndexRouteImport } from './../../pages/(auth)/login/register/index'
+import { Route as authLoginCodeLoginIndexRouteImport } from './../../pages/(auth)/login/code-login/index'
+import { Route as adminSystemUserIndexRouteImport } from './../../pages/(admin)/system/user/index'
+import { Route as adminSystemRoleIndexRouteImport } from './../../pages/(admin)/system/role/index'
+import { Route as adminSystemMenuIndexRouteImport } from './../../pages/(admin)/system/menu/index'
+import { Route as adminSystemDeptIndexRouteImport } from './../../pages/(admin)/system/dept/index'
+import { Route as adminStorageFileIndexRouteImport } from './../../pages/(admin)/storage/file/index'
+import { Route as adminMonitorOnlineIndexRouteImport } from './../../pages/(admin)/monitor/online/index'
+import { Route as adminMonitorJobIndexRouteImport } from './../../pages/(admin)/monitor/job/index'
+import { Route as adminLogOperationIndexRouteImport } from './../../pages/(admin)/log/operation/index'
+import { Route as adminLogAccessIndexRouteImport } from './../../pages/(admin)/log/access/index'
 
 const adminLayoutRoute = adminLayoutRouteImport.update({
-  id: "/(admin)",
+  id: '/(admin)',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const IndexRoute = IndexRouteImport.update({
-  id: "/",
-  path: "/",
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const errors500Route = errors500RouteImport.update({
-  id: "/(errors)/500",
-  path: "/500",
+  id: '/(errors)/500',
+  path: '/500',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const errors404Route = errors404RouteImport.update({
-  id: "/(errors)/404",
-  path: "/404",
+  id: '/(errors)/404',
+  path: '/404',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const errors403Route = errors403RouteImport.update({
-  id: "/(errors)/403",
-  path: "/403",
+  id: '/(errors)/403',
+  path: '/403',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const authLoginOutRoute = authLoginOutRouteImport.update({
-  id: "/(auth)/login-out",
-  path: "/login-out",
+  id: '/(auth)/login-out',
+  path: '/login-out',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const authLoginLayoutRoute = authLoginLayoutRouteImport.update({
-  id: "/(auth)/login",
-  path: "/login",
+  id: '/(auth)/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const adminSystemLayoutRoute = adminSystemLayoutRouteImport.update({
-  id: "/system",
-  path: "/system",
+  id: '/system',
+  path: '/system',
   getParentRoute: () => adminLayoutRoute,
-} as any);
+} as any)
 const authLoginIndexRoute = authLoginIndexRouteImport.update({
-  id: "/",
-  path: "/",
+  id: '/',
+  path: '/',
   getParentRoute: () => authLoginLayoutRoute,
-} as any);
+} as any)
 const adminSystemIndexRoute = adminSystemIndexRouteImport.update({
-  id: "/",
-  path: "/",
+  id: '/',
+  path: '/',
   getParentRoute: () => adminSystemLayoutRoute,
-} as any);
-const adminHomeIndexRoute = adminHomeIndexRouteImport.update({
-  id: "/home/",
-  path: "/home/",
+} as any)
+const adminStorageIndexRoute = adminStorageIndexRouteImport.update({
+  id: '/storage/',
+  path: '/storage/',
   getParentRoute: () => adminLayoutRoute,
-} as any);
+} as any)
+const adminMonitorIndexRoute = adminMonitorIndexRouteImport.update({
+  id: '/monitor/',
+  path: '/monitor/',
+  getParentRoute: () => adminLayoutRoute,
+} as any)
+const adminLogIndexRoute = adminLogIndexRouteImport.update({
+  id: '/log/',
+  path: '/log/',
+  getParentRoute: () => adminLayoutRoute,
+} as any)
+const adminHomeIndexRoute = adminHomeIndexRouteImport.update({
+  id: '/home/',
+  path: '/home/',
+  getParentRoute: () => adminLayoutRoute,
+} as any)
+const adminDictIndexRoute = adminDictIndexRouteImport.update({
+  id: '/dict/',
+  path: '/dict/',
+  getParentRoute: () => adminLayoutRoute,
+} as any)
 const authLoginResetPwdIndexRoute = authLoginResetPwdIndexRouteImport.update({
-  id: "/reset-pwd/",
-  path: "/reset-pwd/",
+  id: '/reset-pwd/',
+  path: '/reset-pwd/',
   getParentRoute: () => authLoginLayoutRoute,
-} as any);
+} as any)
 const authLoginRegisterIndexRoute = authLoginRegisterIndexRouteImport.update({
-  id: "/register/",
-  path: "/register/",
+  id: '/register/',
+  path: '/register/',
   getParentRoute: () => authLoginLayoutRoute,
-} as any);
+} as any)
 const authLoginCodeLoginIndexRoute = authLoginCodeLoginIndexRouteImport.update({
-  id: "/code-login/",
-  path: "/code-login/",
+  id: '/code-login/',
+  path: '/code-login/',
   getParentRoute: () => authLoginLayoutRoute,
-} as any);
+} as any)
 const adminSystemUserIndexRoute = adminSystemUserIndexRouteImport.update({
-  id: "/user/",
-  path: "/user/",
+  id: '/user/',
+  path: '/user/',
   getParentRoute: () => adminSystemLayoutRoute,
-} as any);
+} as any)
 const adminSystemRoleIndexRoute = adminSystemRoleIndexRouteImport.update({
-  id: "/role/",
-  path: "/role/",
+  id: '/role/',
+  path: '/role/',
   getParentRoute: () => adminSystemLayoutRoute,
-} as any);
+} as any)
 const adminSystemMenuIndexRoute = adminSystemMenuIndexRouteImport.update({
-  id: "/menu/",
-  path: "/menu/",
+  id: '/menu/',
+  path: '/menu/',
   getParentRoute: () => adminSystemLayoutRoute,
-} as any);
+} as any)
 const adminSystemDeptIndexRoute = adminSystemDeptIndexRouteImport.update({
-  id: "/dept/",
-  path: "/dept/",
+  id: '/dept/',
+  path: '/dept/',
   getParentRoute: () => adminSystemLayoutRoute,
-} as any);
+} as any)
+const adminStorageFileIndexRoute = adminStorageFileIndexRouteImport.update({
+  id: '/storage/file/',
+  path: '/storage/file/',
+  getParentRoute: () => adminLayoutRoute,
+} as any)
+const adminMonitorOnlineIndexRoute = adminMonitorOnlineIndexRouteImport.update({
+  id: '/monitor/online/',
+  path: '/monitor/online/',
+  getParentRoute: () => adminLayoutRoute,
+} as any)
+const adminMonitorJobIndexRoute = adminMonitorJobIndexRouteImport.update({
+  id: '/monitor/job/',
+  path: '/monitor/job/',
+  getParentRoute: () => adminLayoutRoute,
+} as any)
+const adminLogOperationIndexRoute = adminLogOperationIndexRouteImport.update({
+  id: '/log/operation/',
+  path: '/log/operation/',
+  getParentRoute: () => adminLayoutRoute,
+} as any)
+const adminLogAccessIndexRoute = adminLogAccessIndexRouteImport.update({
+  id: '/log/access/',
+  path: '/log/access/',
+  getParentRoute: () => adminLayoutRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
-  "/": typeof IndexRoute;
-  "/system": typeof adminSystemLayoutRouteWithChildren;
-  "/login": typeof authLoginLayoutRouteWithChildren;
-  "/login-out": typeof authLoginOutRoute;
-  "/403": typeof errors403Route;
-  "/404": typeof errors404Route;
-  "/500": typeof errors500Route;
-  "/home/": typeof adminHomeIndexRoute;
-  "/system/": typeof adminSystemIndexRoute;
-  "/login/": typeof authLoginIndexRoute;
-  "/system/dept/": typeof adminSystemDeptIndexRoute;
-  "/system/menu/": typeof adminSystemMenuIndexRoute;
-  "/system/role/": typeof adminSystemRoleIndexRoute;
-  "/system/user/": typeof adminSystemUserIndexRoute;
-  "/login/code-login/": typeof authLoginCodeLoginIndexRoute;
-  "/login/register/": typeof authLoginRegisterIndexRoute;
-  "/login/reset-pwd/": typeof authLoginResetPwdIndexRoute;
+  '/': typeof IndexRoute
+  '/system': typeof adminSystemLayoutRouteWithChildren
+  '/login': typeof authLoginLayoutRouteWithChildren
+  '/login-out': typeof authLoginOutRoute
+  '/403': typeof errors403Route
+  '/404': typeof errors404Route
+  '/500': typeof errors500Route
+  '/dict/': typeof adminDictIndexRoute
+  '/home/': typeof adminHomeIndexRoute
+  '/log/': typeof adminLogIndexRoute
+  '/monitor/': typeof adminMonitorIndexRoute
+  '/storage/': typeof adminStorageIndexRoute
+  '/system/': typeof adminSystemIndexRoute
+  '/login/': typeof authLoginIndexRoute
+  '/log/access/': typeof adminLogAccessIndexRoute
+  '/log/operation/': typeof adminLogOperationIndexRoute
+  '/monitor/job/': typeof adminMonitorJobIndexRoute
+  '/monitor/online/': typeof adminMonitorOnlineIndexRoute
+  '/storage/file/': typeof adminStorageFileIndexRoute
+  '/system/dept/': typeof adminSystemDeptIndexRoute
+  '/system/menu/': typeof adminSystemMenuIndexRoute
+  '/system/role/': typeof adminSystemRoleIndexRoute
+  '/system/user/': typeof adminSystemUserIndexRoute
+  '/login/code-login/': typeof authLoginCodeLoginIndexRoute
+  '/login/register/': typeof authLoginRegisterIndexRoute
+  '/login/reset-pwd/': typeof authLoginResetPwdIndexRoute
 }
 export interface FileRoutesByTo {
-  "/": typeof IndexRoute;
-  "/login-out": typeof authLoginOutRoute;
-  "/403": typeof errors403Route;
-  "/404": typeof errors404Route;
-  "/500": typeof errors500Route;
-  "/home": typeof adminHomeIndexRoute;
-  "/system": typeof adminSystemIndexRoute;
-  "/login": typeof authLoginIndexRoute;
-  "/system/dept": typeof adminSystemDeptIndexRoute;
-  "/system/menu": typeof adminSystemMenuIndexRoute;
-  "/system/role": typeof adminSystemRoleIndexRoute;
-  "/system/user": typeof adminSystemUserIndexRoute;
-  "/login/code-login": typeof authLoginCodeLoginIndexRoute;
-  "/login/register": typeof authLoginRegisterIndexRoute;
-  "/login/reset-pwd": typeof authLoginResetPwdIndexRoute;
+  '/': typeof IndexRoute
+  '/login-out': typeof authLoginOutRoute
+  '/403': typeof errors403Route
+  '/404': typeof errors404Route
+  '/500': typeof errors500Route
+  '/dict': typeof adminDictIndexRoute
+  '/home': typeof adminHomeIndexRoute
+  '/log': typeof adminLogIndexRoute
+  '/monitor': typeof adminMonitorIndexRoute
+  '/storage': typeof adminStorageIndexRoute
+  '/system': typeof adminSystemIndexRoute
+  '/login': typeof authLoginIndexRoute
+  '/log/access': typeof adminLogAccessIndexRoute
+  '/log/operation': typeof adminLogOperationIndexRoute
+  '/monitor/job': typeof adminMonitorJobIndexRoute
+  '/monitor/online': typeof adminMonitorOnlineIndexRoute
+  '/storage/file': typeof adminStorageFileIndexRoute
+  '/system/dept': typeof adminSystemDeptIndexRoute
+  '/system/menu': typeof adminSystemMenuIndexRoute
+  '/system/role': typeof adminSystemRoleIndexRoute
+  '/system/user': typeof adminSystemUserIndexRoute
+  '/login/code-login': typeof authLoginCodeLoginIndexRoute
+  '/login/register': typeof authLoginRegisterIndexRoute
+  '/login/reset-pwd': typeof authLoginResetPwdIndexRoute
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport;
-  "/": typeof IndexRoute;
-  "/(admin)": typeof adminLayoutRouteWithChildren;
-  "/(admin)/system": typeof adminSystemLayoutRouteWithChildren;
-  "/(auth)/login": typeof authLoginLayoutRouteWithChildren;
-  "/(auth)/login-out": typeof authLoginOutRoute;
-  "/(errors)/403": typeof errors403Route;
-  "/(errors)/404": typeof errors404Route;
-  "/(errors)/500": typeof errors500Route;
-  "/(admin)/home/": typeof adminHomeIndexRoute;
-  "/(admin)/system/": typeof adminSystemIndexRoute;
-  "/(auth)/login/": typeof authLoginIndexRoute;
-  "/(admin)/system/dept/": typeof adminSystemDeptIndexRoute;
-  "/(admin)/system/menu/": typeof adminSystemMenuIndexRoute;
-  "/(admin)/system/role/": typeof adminSystemRoleIndexRoute;
-  "/(admin)/system/user/": typeof adminSystemUserIndexRoute;
-  "/(auth)/login/code-login/": typeof authLoginCodeLoginIndexRoute;
-  "/(auth)/login/register/": typeof authLoginRegisterIndexRoute;
-  "/(auth)/login/reset-pwd/": typeof authLoginResetPwdIndexRoute;
+  __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
+  '/(admin)': typeof adminLayoutRouteWithChildren
+  '/(admin)/system': typeof adminSystemLayoutRouteWithChildren
+  '/(auth)/login': typeof authLoginLayoutRouteWithChildren
+  '/(auth)/login-out': typeof authLoginOutRoute
+  '/(errors)/403': typeof errors403Route
+  '/(errors)/404': typeof errors404Route
+  '/(errors)/500': typeof errors500Route
+  '/(admin)/dict/': typeof adminDictIndexRoute
+  '/(admin)/home/': typeof adminHomeIndexRoute
+  '/(admin)/log/': typeof adminLogIndexRoute
+  '/(admin)/monitor/': typeof adminMonitorIndexRoute
+  '/(admin)/storage/': typeof adminStorageIndexRoute
+  '/(admin)/system/': typeof adminSystemIndexRoute
+  '/(auth)/login/': typeof authLoginIndexRoute
+  '/(admin)/log/access/': typeof adminLogAccessIndexRoute
+  '/(admin)/log/operation/': typeof adminLogOperationIndexRoute
+  '/(admin)/monitor/job/': typeof adminMonitorJobIndexRoute
+  '/(admin)/monitor/online/': typeof adminMonitorOnlineIndexRoute
+  '/(admin)/storage/file/': typeof adminStorageFileIndexRoute
+  '/(admin)/system/dept/': typeof adminSystemDeptIndexRoute
+  '/(admin)/system/menu/': typeof adminSystemMenuIndexRoute
+  '/(admin)/system/role/': typeof adminSystemRoleIndexRoute
+  '/(admin)/system/user/': typeof adminSystemUserIndexRoute
+  '/(auth)/login/code-login/': typeof authLoginCodeLoginIndexRoute
+  '/(auth)/login/register/': typeof authLoginRegisterIndexRoute
+  '/(auth)/login/reset-pwd/': typeof authLoginResetPwdIndexRoute
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath;
+  fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | "/"
-    | "/system"
-    | "/login"
-    | "/login-out"
-    | "/403"
-    | "/404"
-    | "/500"
-    | "/home/"
-    | "/system/"
-    | "/login/"
-    | "/system/dept/"
-    | "/system/menu/"
-    | "/system/role/"
-    | "/system/user/"
-    | "/login/code-login/"
-    | "/login/register/"
-    | "/login/reset-pwd/";
-  fileRoutesByTo: FileRoutesByTo;
+    | '/'
+    | '/system'
+    | '/login'
+    | '/login-out'
+    | '/403'
+    | '/404'
+    | '/500'
+    | '/dict/'
+    | '/home/'
+    | '/log/'
+    | '/monitor/'
+    | '/storage/'
+    | '/system/'
+    | '/login/'
+    | '/log/access/'
+    | '/log/operation/'
+    | '/monitor/job/'
+    | '/monitor/online/'
+    | '/storage/file/'
+    | '/system/dept/'
+    | '/system/menu/'
+    | '/system/role/'
+    | '/system/user/'
+    | '/login/code-login/'
+    | '/login/register/'
+    | '/login/reset-pwd/'
+  fileRoutesByTo: FileRoutesByTo
   to:
-    | "/"
-    | "/login-out"
-    | "/403"
-    | "/404"
-    | "/500"
-    | "/home"
-    | "/system"
-    | "/login"
-    | "/system/dept"
-    | "/system/menu"
-    | "/system/role"
-    | "/system/user"
-    | "/login/code-login"
-    | "/login/register"
-    | "/login/reset-pwd";
+    | '/'
+    | '/login-out'
+    | '/403'
+    | '/404'
+    | '/500'
+    | '/dict'
+    | '/home'
+    | '/log'
+    | '/monitor'
+    | '/storage'
+    | '/system'
+    | '/login'
+    | '/log/access'
+    | '/log/operation'
+    | '/monitor/job'
+    | '/monitor/online'
+    | '/storage/file'
+    | '/system/dept'
+    | '/system/menu'
+    | '/system/role'
+    | '/system/user'
+    | '/login/code-login'
+    | '/login/register'
+    | '/login/reset-pwd'
   id:
-    | "__root__"
-    | "/"
-    | "/(admin)"
-    | "/(admin)/system"
-    | "/(auth)/login"
-    | "/(auth)/login-out"
-    | "/(errors)/403"
-    | "/(errors)/404"
-    | "/(errors)/500"
-    | "/(admin)/home/"
-    | "/(admin)/system/"
-    | "/(auth)/login/"
-    | "/(admin)/system/dept/"
-    | "/(admin)/system/menu/"
-    | "/(admin)/system/role/"
-    | "/(admin)/system/user/"
-    | "/(auth)/login/code-login/"
-    | "/(auth)/login/register/"
-    | "/(auth)/login/reset-pwd/";
-  fileRoutesById: FileRoutesById;
+    | '__root__'
+    | '/'
+    | '/(admin)'
+    | '/(admin)/system'
+    | '/(auth)/login'
+    | '/(auth)/login-out'
+    | '/(errors)/403'
+    | '/(errors)/404'
+    | '/(errors)/500'
+    | '/(admin)/dict/'
+    | '/(admin)/home/'
+    | '/(admin)/log/'
+    | '/(admin)/monitor/'
+    | '/(admin)/storage/'
+    | '/(admin)/system/'
+    | '/(auth)/login/'
+    | '/(admin)/log/access/'
+    | '/(admin)/log/operation/'
+    | '/(admin)/monitor/job/'
+    | '/(admin)/monitor/online/'
+    | '/(admin)/storage/file/'
+    | '/(admin)/system/dept/'
+    | '/(admin)/system/menu/'
+    | '/(admin)/system/role/'
+    | '/(admin)/system/user/'
+    | '/(auth)/login/code-login/'
+    | '/(auth)/login/register/'
+    | '/(auth)/login/reset-pwd/'
+  fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute;
-  adminLayoutRoute: typeof adminLayoutRouteWithChildren;
-  authLoginLayoutRoute: typeof authLoginLayoutRouteWithChildren;
-  authLoginOutRoute: typeof authLoginOutRoute;
-  errors403Route: typeof errors403Route;
-  errors404Route: typeof errors404Route;
-  errors500Route: typeof errors500Route;
+  IndexRoute: typeof IndexRoute
+  adminLayoutRoute: typeof adminLayoutRouteWithChildren
+  authLoginLayoutRoute: typeof authLoginLayoutRouteWithChildren
+  authLoginOutRoute: typeof authLoginOutRoute
+  errors403Route: typeof errors403Route
+  errors404Route: typeof errors404Route
+  errors500Route: typeof errors500Route
 }
 
-declare module "@tanstack/react-router" {
+declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    "/(admin)": {
-      id: "/(admin)";
-      path: "";
-      fullPath: "";
-      preLoaderRoute: typeof adminLayoutRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/": {
-      id: "/";
-      path: "/";
-      fullPath: "/";
-      preLoaderRoute: typeof IndexRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/(errors)/500": {
-      id: "/(errors)/500";
-      path: "/500";
-      fullPath: "/500";
-      preLoaderRoute: typeof errors500RouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/(errors)/404": {
-      id: "/(errors)/404";
-      path: "/404";
-      fullPath: "/404";
-      preLoaderRoute: typeof errors404RouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/(errors)/403": {
-      id: "/(errors)/403";
-      path: "/403";
-      fullPath: "/403";
-      preLoaderRoute: typeof errors403RouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/(auth)/login-out": {
-      id: "/(auth)/login-out";
-      path: "/login-out";
-      fullPath: "/login-out";
-      preLoaderRoute: typeof authLoginOutRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/(auth)/login": {
-      id: "/(auth)/login";
-      path: "/login";
-      fullPath: "/login";
-      preLoaderRoute: typeof authLoginLayoutRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/(admin)/system": {
-      id: "/(admin)/system";
-      path: "/system";
-      fullPath: "/system";
-      preLoaderRoute: typeof adminSystemLayoutRouteImport;
-      parentRoute: typeof adminLayoutRoute;
-    };
-    "/(auth)/login/": {
-      id: "/(auth)/login/";
-      path: "/";
-      fullPath: "/login/";
-      preLoaderRoute: typeof authLoginIndexRouteImport;
-      parentRoute: typeof authLoginLayoutRoute;
-    };
-    "/(admin)/system/": {
-      id: "/(admin)/system/";
-      path: "/";
-      fullPath: "/system/";
-      preLoaderRoute: typeof adminSystemIndexRouteImport;
-      parentRoute: typeof adminSystemLayoutRoute;
-    };
-    "/(admin)/home/": {
-      id: "/(admin)/home/";
-      path: "/home";
-      fullPath: "/home/";
-      preLoaderRoute: typeof adminHomeIndexRouteImport;
-      parentRoute: typeof adminLayoutRoute;
-    };
-    "/(auth)/login/reset-pwd/": {
-      id: "/(auth)/login/reset-pwd/";
-      path: "/reset-pwd";
-      fullPath: "/login/reset-pwd/";
-      preLoaderRoute: typeof authLoginResetPwdIndexRouteImport;
-      parentRoute: typeof authLoginLayoutRoute;
-    };
-    "/(auth)/login/register/": {
-      id: "/(auth)/login/register/";
-      path: "/register";
-      fullPath: "/login/register/";
-      preLoaderRoute: typeof authLoginRegisterIndexRouteImport;
-      parentRoute: typeof authLoginLayoutRoute;
-    };
-    "/(auth)/login/code-login/": {
-      id: "/(auth)/login/code-login/";
-      path: "/code-login";
-      fullPath: "/login/code-login/";
-      preLoaderRoute: typeof authLoginCodeLoginIndexRouteImport;
-      parentRoute: typeof authLoginLayoutRoute;
-    };
-    "/(admin)/system/user/": {
-      id: "/(admin)/system/user/";
-      path: "/user";
-      fullPath: "/system/user/";
-      preLoaderRoute: typeof adminSystemUserIndexRouteImport;
-      parentRoute: typeof adminSystemLayoutRoute;
-    };
-    "/(admin)/system/role/": {
-      id: "/(admin)/system/role/";
-      path: "/role";
-      fullPath: "/system/role/";
-      preLoaderRoute: typeof adminSystemRoleIndexRouteImport;
-      parentRoute: typeof adminSystemLayoutRoute;
-    };
-    "/(admin)/system/menu/": {
-      id: "/(admin)/system/menu/";
-      path: "/menu";
-      fullPath: "/system/menu/";
-      preLoaderRoute: typeof adminSystemMenuIndexRouteImport;
-      parentRoute: typeof adminSystemLayoutRoute;
-    };
-    "/(admin)/system/dept/": {
-      id: "/(admin)/system/dept/";
-      path: "/dept";
-      fullPath: "/system/dept/";
-      preLoaderRoute: typeof adminSystemDeptIndexRouteImport;
-      parentRoute: typeof adminSystemLayoutRoute;
-    };
+    '/(admin)': {
+      id: '/(admin)'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof adminLayoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(errors)/500': {
+      id: '/(errors)/500'
+      path: '/500'
+      fullPath: '/500'
+      preLoaderRoute: typeof errors500RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(errors)/404': {
+      id: '/(errors)/404'
+      path: '/404'
+      fullPath: '/404'
+      preLoaderRoute: typeof errors404RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(errors)/403': {
+      id: '/(errors)/403'
+      path: '/403'
+      fullPath: '/403'
+      preLoaderRoute: typeof errors403RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(auth)/login-out': {
+      id: '/(auth)/login-out'
+      path: '/login-out'
+      fullPath: '/login-out'
+      preLoaderRoute: typeof authLoginOutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(auth)/login': {
+      id: '/(auth)/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof authLoginLayoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(admin)/system': {
+      id: '/(admin)/system'
+      path: '/system'
+      fullPath: '/system'
+      preLoaderRoute: typeof adminSystemLayoutRouteImport
+      parentRoute: typeof adminLayoutRoute
+    }
+    '/(auth)/login/': {
+      id: '/(auth)/login/'
+      path: '/'
+      fullPath: '/login/'
+      preLoaderRoute: typeof authLoginIndexRouteImport
+      parentRoute: typeof authLoginLayoutRoute
+    }
+    '/(admin)/system/': {
+      id: '/(admin)/system/'
+      path: '/'
+      fullPath: '/system/'
+      preLoaderRoute: typeof adminSystemIndexRouteImport
+      parentRoute: typeof adminSystemLayoutRoute
+    }
+    '/(admin)/storage/': {
+      id: '/(admin)/storage/'
+      path: '/storage'
+      fullPath: '/storage/'
+      preLoaderRoute: typeof adminStorageIndexRouteImport
+      parentRoute: typeof adminLayoutRoute
+    }
+    '/(admin)/monitor/': {
+      id: '/(admin)/monitor/'
+      path: '/monitor'
+      fullPath: '/monitor/'
+      preLoaderRoute: typeof adminMonitorIndexRouteImport
+      parentRoute: typeof adminLayoutRoute
+    }
+    '/(admin)/log/': {
+      id: '/(admin)/log/'
+      path: '/log'
+      fullPath: '/log/'
+      preLoaderRoute: typeof adminLogIndexRouteImport
+      parentRoute: typeof adminLayoutRoute
+    }
+    '/(admin)/home/': {
+      id: '/(admin)/home/'
+      path: '/home'
+      fullPath: '/home/'
+      preLoaderRoute: typeof adminHomeIndexRouteImport
+      parentRoute: typeof adminLayoutRoute
+    }
+    '/(admin)/dict/': {
+      id: '/(admin)/dict/'
+      path: '/dict'
+      fullPath: '/dict/'
+      preLoaderRoute: typeof adminDictIndexRouteImport
+      parentRoute: typeof adminLayoutRoute
+    }
+    '/(auth)/login/reset-pwd/': {
+      id: '/(auth)/login/reset-pwd/'
+      path: '/reset-pwd'
+      fullPath: '/login/reset-pwd/'
+      preLoaderRoute: typeof authLoginResetPwdIndexRouteImport
+      parentRoute: typeof authLoginLayoutRoute
+    }
+    '/(auth)/login/register/': {
+      id: '/(auth)/login/register/'
+      path: '/register'
+      fullPath: '/login/register/'
+      preLoaderRoute: typeof authLoginRegisterIndexRouteImport
+      parentRoute: typeof authLoginLayoutRoute
+    }
+    '/(auth)/login/code-login/': {
+      id: '/(auth)/login/code-login/'
+      path: '/code-login'
+      fullPath: '/login/code-login/'
+      preLoaderRoute: typeof authLoginCodeLoginIndexRouteImport
+      parentRoute: typeof authLoginLayoutRoute
+    }
+    '/(admin)/system/user/': {
+      id: '/(admin)/system/user/'
+      path: '/user'
+      fullPath: '/system/user/'
+      preLoaderRoute: typeof adminSystemUserIndexRouteImport
+      parentRoute: typeof adminSystemLayoutRoute
+    }
+    '/(admin)/system/role/': {
+      id: '/(admin)/system/role/'
+      path: '/role'
+      fullPath: '/system/role/'
+      preLoaderRoute: typeof adminSystemRoleIndexRouteImport
+      parentRoute: typeof adminSystemLayoutRoute
+    }
+    '/(admin)/system/menu/': {
+      id: '/(admin)/system/menu/'
+      path: '/menu'
+      fullPath: '/system/menu/'
+      preLoaderRoute: typeof adminSystemMenuIndexRouteImport
+      parentRoute: typeof adminSystemLayoutRoute
+    }
+    '/(admin)/system/dept/': {
+      id: '/(admin)/system/dept/'
+      path: '/dept'
+      fullPath: '/system/dept/'
+      preLoaderRoute: typeof adminSystemDeptIndexRouteImport
+      parentRoute: typeof adminSystemLayoutRoute
+    }
+    '/(admin)/storage/file/': {
+      id: '/(admin)/storage/file/'
+      path: '/storage/file'
+      fullPath: '/storage/file/'
+      preLoaderRoute: typeof adminStorageFileIndexRouteImport
+      parentRoute: typeof adminLayoutRoute
+    }
+    '/(admin)/monitor/online/': {
+      id: '/(admin)/monitor/online/'
+      path: '/monitor/online'
+      fullPath: '/monitor/online/'
+      preLoaderRoute: typeof adminMonitorOnlineIndexRouteImport
+      parentRoute: typeof adminLayoutRoute
+    }
+    '/(admin)/monitor/job/': {
+      id: '/(admin)/monitor/job/'
+      path: '/monitor/job'
+      fullPath: '/monitor/job/'
+      preLoaderRoute: typeof adminMonitorJobIndexRouteImport
+      parentRoute: typeof adminLayoutRoute
+    }
+    '/(admin)/log/operation/': {
+      id: '/(admin)/log/operation/'
+      path: '/log/operation'
+      fullPath: '/log/operation/'
+      preLoaderRoute: typeof adminLogOperationIndexRouteImport
+      parentRoute: typeof adminLayoutRoute
+    }
+    '/(admin)/log/access/': {
+      id: '/(admin)/log/access/'
+      path: '/log/access'
+      fullPath: '/log/access/'
+      preLoaderRoute: typeof adminLogAccessIndexRouteImport
+      parentRoute: typeof adminLayoutRoute
+    }
   }
 }
 
 interface adminSystemLayoutRouteChildren {
-  adminSystemIndexRoute: typeof adminSystemIndexRoute;
-  adminSystemDeptIndexRoute: typeof adminSystemDeptIndexRoute;
-  adminSystemMenuIndexRoute: typeof adminSystemMenuIndexRoute;
-  adminSystemRoleIndexRoute: typeof adminSystemRoleIndexRoute;
-  adminSystemUserIndexRoute: typeof adminSystemUserIndexRoute;
+  adminSystemIndexRoute: typeof adminSystemIndexRoute
+  adminSystemDeptIndexRoute: typeof adminSystemDeptIndexRoute
+  adminSystemMenuIndexRoute: typeof adminSystemMenuIndexRoute
+  adminSystemRoleIndexRoute: typeof adminSystemRoleIndexRoute
+  adminSystemUserIndexRoute: typeof adminSystemUserIndexRoute
 }
 
 const adminSystemLayoutRouteChildren: adminSystemLayoutRouteChildren = {
@@ -389,29 +560,48 @@ const adminSystemLayoutRouteChildren: adminSystemLayoutRouteChildren = {
   adminSystemMenuIndexRoute: adminSystemMenuIndexRoute,
   adminSystemRoleIndexRoute: adminSystemRoleIndexRoute,
   adminSystemUserIndexRoute: adminSystemUserIndexRoute,
-};
+}
 
-const adminSystemLayoutRouteWithChildren = adminSystemLayoutRoute._addFileChildren(
-  adminSystemLayoutRouteChildren,
-);
+const adminSystemLayoutRouteWithChildren =
+  adminSystemLayoutRoute._addFileChildren(adminSystemLayoutRouteChildren)
 
 interface adminLayoutRouteChildren {
-  adminSystemLayoutRoute: typeof adminSystemLayoutRouteWithChildren;
-  adminHomeIndexRoute: typeof adminHomeIndexRoute;
+  adminSystemLayoutRoute: typeof adminSystemLayoutRouteWithChildren
+  adminDictIndexRoute: typeof adminDictIndexRoute
+  adminHomeIndexRoute: typeof adminHomeIndexRoute
+  adminLogIndexRoute: typeof adminLogIndexRoute
+  adminMonitorIndexRoute: typeof adminMonitorIndexRoute
+  adminStorageIndexRoute: typeof adminStorageIndexRoute
+  adminLogAccessIndexRoute: typeof adminLogAccessIndexRoute
+  adminLogOperationIndexRoute: typeof adminLogOperationIndexRoute
+  adminMonitorJobIndexRoute: typeof adminMonitorJobIndexRoute
+  adminMonitorOnlineIndexRoute: typeof adminMonitorOnlineIndexRoute
+  adminStorageFileIndexRoute: typeof adminStorageFileIndexRoute
 }
 
 const adminLayoutRouteChildren: adminLayoutRouteChildren = {
   adminSystemLayoutRoute: adminSystemLayoutRouteWithChildren,
+  adminDictIndexRoute: adminDictIndexRoute,
   adminHomeIndexRoute: adminHomeIndexRoute,
-};
+  adminLogIndexRoute: adminLogIndexRoute,
+  adminMonitorIndexRoute: adminMonitorIndexRoute,
+  adminStorageIndexRoute: adminStorageIndexRoute,
+  adminLogAccessIndexRoute: adminLogAccessIndexRoute,
+  adminLogOperationIndexRoute: adminLogOperationIndexRoute,
+  adminMonitorJobIndexRoute: adminMonitorJobIndexRoute,
+  adminMonitorOnlineIndexRoute: adminMonitorOnlineIndexRoute,
+  adminStorageFileIndexRoute: adminStorageFileIndexRoute,
+}
 
-const adminLayoutRouteWithChildren = adminLayoutRoute._addFileChildren(adminLayoutRouteChildren);
+const adminLayoutRouteWithChildren = adminLayoutRoute._addFileChildren(
+  adminLayoutRouteChildren,
+)
 
 interface authLoginLayoutRouteChildren {
-  authLoginIndexRoute: typeof authLoginIndexRoute;
-  authLoginCodeLoginIndexRoute: typeof authLoginCodeLoginIndexRoute;
-  authLoginRegisterIndexRoute: typeof authLoginRegisterIndexRoute;
-  authLoginResetPwdIndexRoute: typeof authLoginResetPwdIndexRoute;
+  authLoginIndexRoute: typeof authLoginIndexRoute
+  authLoginCodeLoginIndexRoute: typeof authLoginCodeLoginIndexRoute
+  authLoginRegisterIndexRoute: typeof authLoginRegisterIndexRoute
+  authLoginResetPwdIndexRoute: typeof authLoginResetPwdIndexRoute
 }
 
 const authLoginLayoutRouteChildren: authLoginLayoutRouteChildren = {
@@ -419,11 +609,11 @@ const authLoginLayoutRouteChildren: authLoginLayoutRouteChildren = {
   authLoginCodeLoginIndexRoute: authLoginCodeLoginIndexRoute,
   authLoginRegisterIndexRoute: authLoginRegisterIndexRoute,
   authLoginResetPwdIndexRoute: authLoginResetPwdIndexRoute,
-};
+}
 
 const authLoginLayoutRouteWithChildren = authLoginLayoutRoute._addFileChildren(
   authLoginLayoutRouteChildren,
-);
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -433,7 +623,7 @@ const rootRouteChildren: RootRouteChildren = {
   errors403Route: errors403Route,
   errors404Route: errors404Route,
   errors500Route: errors500Route,
-};
+}
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>();
+  ._addFileTypes<FileRouteTypes>()

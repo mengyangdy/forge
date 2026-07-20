@@ -10,9 +10,7 @@ const app = new OpenAPIHono();
 // 挂载全局登录鉴权中间件
 app.use("*", authMiddleware);
 
-// =================== OpenAPI 路由描述定义 ===================
-
-// 1. 获取全量字典包接口 (面向所有登录用户)
+// 1. 获取全量字典包接口
 const allRoute = createRoute({
   method: "get",
   path: "/all",
@@ -44,7 +42,6 @@ const allRoute = createRoute({
 });
 
 // 2. 查询字典类型列表
-app.use("/type/list", requirePermission("sys:dict:list"));
 const listTypesRoute = createRoute({
   method: "get",
   path: "/type/list",
@@ -78,7 +75,6 @@ const listTypesRoute = createRoute({
 });
 
 // 3. 创建字典类型
-app.use("/type/create", requirePermission("sys:dict:create"));
 const createTypeRoute = createRoute({
   method: "post",
   path: "/type/create",
@@ -111,7 +107,6 @@ const createTypeRoute = createRoute({
 });
 
 // 4. 更新字典类型
-app.on("PUT", ["/type/{id}"], requirePermission("sys:dict:update"));
 const updateTypeRoute = createRoute({
   method: "put",
   path: "/type/{id}",
@@ -146,7 +141,6 @@ const updateTypeRoute = createRoute({
   },
 });
 
-app.on("DELETE", ["/type/{id}"], requirePermission("sys:dict:delete"));
 // 5. 删除字典类型
 const deleteTypeRoute = createRoute({
   method: "delete",
@@ -173,7 +167,6 @@ const deleteTypeRoute = createRoute({
     },
   },
 });
-app.use("/data/list", requirePermission("sys:dict:list"));
 
 // 6. 查询字典数据项明细列表
 const listDataRoute = createRoute({
@@ -207,7 +200,6 @@ const listDataRoute = createRoute({
     },
   },
 });
-app.use("/data/create", requirePermission("sys:dict:create"));
 
 // 7. 创建字典数据项
 const createDataRoute = createRoute({
@@ -240,7 +232,6 @@ const createDataRoute = createRoute({
     },
   },
 });
-app.on("PUT", ["/data/{id}"], requirePermission("sys:dict:update"));
 
 // 8. 修改字典数据项
 const updateDataRoute = createRoute({
@@ -276,7 +267,6 @@ const updateDataRoute = createRoute({
     },
   },
 });
-app.on("DELETE", ["/data/{id}"], requirePermission("sys:dict:delete"));
 
 // 9. 删除字典数据项
 const deleteDataRoute = createRoute({
@@ -305,97 +295,97 @@ const deleteDataRoute = createRoute({
   },
 });
 
-// =================== 逻辑方法绑定 ===================
+app.use("/type/list", requirePermission("sys:dict:list"));
+app.use("/type/create", requirePermission("sys:dict:create"));
+app.on("PUT", ["/type/{id}"], requirePermission("sys:dict:update"));
+app.on("DELETE", ["/type/{id}"], requirePermission("sys:dict:delete"));
+app.use("/data/list", requirePermission("sys:dict:list"));
+app.use("/data/create", requirePermission("sys:dict:create"));
+app.on("PUT", ["/data/{id}"], requirePermission("sys:dict:update"));
+app.on("DELETE", ["/data/{id}"], requirePermission("sys:dict:delete"));
 
-app.openapi(allRoute, async (c) => {
-  const result = await dictService.getAllDicts();
-  return c.json({ code: 0, data: result }, 200);
-});
+const routes = app
+  .openapi(allRoute, async (c) => {
+    const result = await dictService.getAllDicts();
+    return c.json({ code: 0, data: result }, 200);
+  })
+  .openapi(listTypesRoute, async (c) => {
+    const page = Number(c.req.query("page") || 1);
+    const pageSize = Number(c.req.query("pageSize") || 10);
+    const name = c.req.query("name");
+    const type = c.req.query("type");
 
-app.openapi(listTypesRoute, async (c) => {
-  const page = Number(c.req.query("page") || 1);
-  const pageSize = Number(c.req.query("pageSize") || 10);
-  const name = c.req.query("name");
-  const type = c.req.query("type");
+    const result = await dictService.listTypes(page, pageSize, { name, type });
+    return c.json({ code: 0, data: result }, 200);
+  })
+  .openapi(createTypeRoute, async (c) => {
+    const data = c.req.valid("json");
+    try {
+      const result = await dictService.createType(data as any);
+      return c.json({ code: 0, message: "创建字典类型成功", data: result }, 200);
+    } catch (error: any) {
+      throw new HTTPException(400, { message: error.message });
+    }
+  })
+  .openapi(updateTypeRoute, async (c) => {
+    const id = Number(c.req.param("id"));
+    const data = c.req.valid("json");
+    try {
+      const result = await dictService.updateType(id, data as any);
+      return c.json({ code: 0, message: "修改字典类型成功", data: result }, 200);
+    } catch (error: any) {
+      throw new HTTPException(400, { message: error.message });
+    }
+  })
+  .openapi(deleteTypeRoute, async (c) => {
+    const id = Number(c.req.param("id"));
+    try {
+      await dictService.deleteType(id);
+      return c.json({ code: 0, message: "删除字典类型成功" }, 200);
+    } catch (error: any) {
+      throw new HTTPException(400, { message: error.message });
+    }
+  })
+  .openapi(listDataRoute, async (c) => {
+    const page = Number(c.req.query("page") || 1);
+    const pageSize = Number(c.req.query("pageSize") || 10);
+    const dictType = c.req.query("dictType");
+    const label = c.req.query("label");
 
-  const result = await dictService.listTypes(page, pageSize, { name, type });
-  return c.json({ code: 0, data: result }, 200);
-});
+    if (!dictType) {
+      throw new HTTPException(400, { message: "缺少 dictType 字典类型参数" });
+    }
 
-app.openapi(createTypeRoute, async (c) => {
-  const data = c.req.valid("json");
-  try {
-    const result = await dictService.createType(data as any);
-    return c.json({ code: 0, message: "创建字典类型成功", data: result }, 200);
-  } catch (error: any) {
-    throw new HTTPException(400, { message: error.message });
-  }
-});
+    const result = await dictService.listData(page, pageSize, dictType, label);
+    return c.json({ code: 0, data: result }, 200);
+  })
+  .openapi(createDataRoute, async (c) => {
+    const data = c.req.valid("json");
+    try {
+      const result = await dictService.createData(data as any);
+      return c.json({ code: 0, message: "创建字典数据成功", data: result }, 200);
+    } catch (error: any) {
+      throw new HTTPException(400, { message: error.message });
+    }
+  })
+  .openapi(updateDataRoute, async (c) => {
+    const id = Number(c.req.param("id"));
+    const data = c.req.valid("json");
+    try {
+      const result = await dictService.updateData(id, data as any);
+      return c.json({ code: 0, message: "修改字典数据成功", data: result }, 200);
+    } catch (error: any) {
+      throw new HTTPException(400, { message: error.message });
+    }
+  })
+  .openapi(deleteDataRoute, async (c) => {
+    const id = Number(c.req.param("id"));
+    try {
+      await dictService.deleteData(id);
+      return c.json({ code: 0, message: "删除字典数据成功" }, 200);
+    } catch (error: any) {
+      throw new HTTPException(400, { message: error.message });
+    }
+  });
 
-app.openapi(updateTypeRoute, async (c) => {
-  const id = Number(c.req.param("id"));
-  const data = c.req.valid("json");
-  try {
-    const result = await dictService.updateType(id, data as any);
-    return c.json({ code: 0, message: "修改字典类型成功", data: result }, 200);
-  } catch (error: any) {
-    throw new HTTPException(400, { message: error.message });
-  }
-});
-
-app.openapi(deleteTypeRoute, async (c) => {
-  const id = Number(c.req.param("id"));
-  try {
-    await dictService.deleteType(id);
-    return c.json({ code: 0, message: "删除字典类型成功" }, 200);
-  } catch (error: any) {
-    throw new HTTPException(400, { message: error.message });
-  }
-});
-
-app.openapi(listDataRoute, async (c) => {
-  const page = Number(c.req.query("page") || 1);
-  const pageSize = Number(c.req.query("pageSize") || 10);
-  const dictType = c.req.query("dictType");
-  const label = c.req.query("label");
-
-  if (!dictType) {
-    throw new HTTPException(400, { message: "缺少 dictType 字典类型参数" });
-  }
-
-  const result = await dictService.listData(page, pageSize, dictType, label);
-  return c.json({ code: 0, data: result }, 200);
-});
-
-app.openapi(createDataRoute, async (c) => {
-  const data = c.req.valid("json");
-  try {
-    const result = await dictService.createData(data as any);
-    return c.json({ code: 0, message: "创建字典数据成功", data: result }, 200);
-  } catch (error: any) {
-    throw new HTTPException(400, { message: error.message });
-  }
-});
-
-app.openapi(updateDataRoute, async (c) => {
-  const id = Number(c.req.param("id"));
-  const data = c.req.valid("json");
-  try {
-    const result = await dictService.updateData(id, data as any);
-    return c.json({ code: 0, message: "修改字典数据成功", data: result }, 200);
-  } catch (error: any) {
-    throw new HTTPException(400, { message: error.message });
-  }
-});
-
-app.openapi(deleteDataRoute, async (c) => {
-  const id = Number(c.req.param("id"));
-  try {
-    await dictService.deleteData(id);
-    return c.json({ code: 0, message: "删除字典数据成功" }, 200);
-  } catch (error: any) {
-    throw new HTTPException(400, { message: error.message });
-  }
-});
-
-export default app;
+export default routes;

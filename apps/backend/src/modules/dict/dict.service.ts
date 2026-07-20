@@ -1,6 +1,6 @@
 import { db } from "../../db/index.js";
 import { dictTypes, dictData } from "@forge/shared";
-import { eq, and, like, sql, asc } from "drizzle-orm";
+import { eq, and, like, sql, asc, inArray } from "drizzle-orm";
 import { redis } from "../../db/redis.js";
 
 const CACHE_KEY = "sys:dict:all";
@@ -8,17 +8,25 @@ const CACHE_KEY = "sys:dict:all";
 export class DictService {
   // 清除 Redis 字典全局缓存
   async clearCache() {
-    await redis.del(CACHE_KEY);
+    try {
+      await redis.del(CACHE_KEY);
+    } catch (err) {
+      console.warn("⚠️ [Redis] 清除字典缓存失败:", err);
+    }
   }
 
   // 1. 获取全量激活的字典包 (带有双重 Redis 缓存机制)
   async getAllDicts() {
     // 尝试读取 Redis 缓存
-    const cached = await redis.get(CACHE_KEY);
-    if (cached) {
-      try {
-        return JSON.parse(cached);
-      } catch {}
+    try {
+      const cached = await redis.get(CACHE_KEY);
+      if (cached) {
+        try {
+          return JSON.parse(cached);
+        } catch {}
+      }
+    } catch (err) {
+      console.warn("⚠️ [Redis] 读取字典缓存失败，回退数据库:", err);
     }
 
     // 缓存未命中：从数据库拉取
@@ -41,13 +49,7 @@ export class DictService {
         listClass: dictData.listClass,
       })
       .from(dictData)
-      .where(
-        and(
-          eq(dictData.status, "active"),
-          // 仅查询可用字典类型的明细
-          sql`${dictData.dictType} = ANY(${activeTypeCodes})`,
-        ),
-      )
+      .where(and(eq(dictData.status, "active"), inArray(dictData.dictType, activeTypeCodes)))
       .orderBy(asc(dictData.sort));
 
     // 分组组装字典包
@@ -66,7 +68,11 @@ export class DictService {
     }
 
     // 写入 Redis 缓存，失效时间 24 小时 (86400 秒)
-    await redis.set(CACHE_KEY, JSON.stringify(dictMap), "EX", 86400);
+    try {
+      await redis.set(CACHE_KEY, JSON.stringify(dictMap), "EX", 86400);
+    } catch (err) {
+      console.warn("⚠️ [Redis] 写入字典缓存失败:", err);
+    }
 
     return dictMap;
   }

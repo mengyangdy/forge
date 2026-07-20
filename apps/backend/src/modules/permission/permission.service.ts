@@ -1,10 +1,10 @@
 import { db } from "../../db/index.js";
 import { permissions } from "@forge/shared";
-import { eq } from "drizzle-orm";
+import { eq, asc } from "drizzle-orm";
 
 export class PermissionService {
   async list() {
-    return await db.select().from(permissions).orderBy(permissions.id);
+    return await db.select().from(permissions).orderBy(asc(permissions.order), asc(permissions.id));
   }
 
   async tree() {

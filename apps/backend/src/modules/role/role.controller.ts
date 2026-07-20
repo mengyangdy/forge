@@ -42,8 +42,6 @@ const updateSchema = z.object({
 });
 
 // 1. 获取角色列表
-app.use("/list", requirePermission("sys:role:list"));
-
 const listRoute = createRoute({
   method: "get",
   path: "/list",
@@ -74,25 +72,7 @@ const listRoute = createRoute({
   },
 });
 
-app.openapi(listRoute, async (c) => {
-  const pageQuery = c.req.query("page");
-  const pageSizeQuery = c.req.query("pageSize");
-  const page = pageQuery ? Number(pageQuery) : undefined;
-  const pageSize = pageSizeQuery ? Number(pageSizeQuery) : undefined;
-
-  const result = await roleService.list(page, pageSize);
-  return c.json(
-    {
-      code: 0,
-      data: result,
-    },
-    200,
-  );
-});
-
 // 2. 获取角色详情
-app.use("/{id}", requirePermission("sys:role:list"));
-
 const detailRoute = createRoute({
   method: "get",
   path: "/{id}",
@@ -119,25 +99,7 @@ const detailRoute = createRoute({
   },
 });
 
-app.openapi(detailRoute, async (c) => {
-  const id = Number(c.req.param("id"));
-  try {
-    const detail = await roleService.detail(id);
-    return c.json(
-      {
-        code: 0,
-        data: detail,
-      },
-      200,
-    );
-  } catch (error: any) {
-    throw new HTTPException(404, { message: error.message });
-  }
-});
-
 // 3. 创建角色
-app.use("/create", requirePermission("sys:role:create"));
-
 const createRouteDoc = createRoute({
   method: "post",
   path: "/create",
@@ -169,26 +131,7 @@ const createRouteDoc = createRoute({
   },
 });
 
-app.openapi(createRouteDoc, async (c) => {
-  const data = c.req.valid("json");
-  try {
-    const result = await roleService.create(data);
-    return c.json(
-      {
-        code: 0,
-        message: "角色创建成功",
-        data: result,
-      },
-      200,
-    );
-  } catch (error: any) {
-    throw new HTTPException(400, { message: error.message });
-  }
-});
-
 // 4. 更新角色
-app.on("PUT", ["/{id}"], requirePermission("sys:role:update"));
-
 const updateRouteDoc = createRoute({
   method: "put",
   path: "/{id}",
@@ -223,27 +166,7 @@ const updateRouteDoc = createRoute({
   },
 });
 
-app.openapi(updateRouteDoc, async (c) => {
-  const id = Number(c.req.param("id"));
-  const data = c.req.valid("json");
-  try {
-    const result = await roleService.update(id, data);
-    return c.json(
-      {
-        code: 0,
-        message: "角色修改成功",
-        data: result,
-      },
-      200,
-    );
-  } catch (error: any) {
-    throw new HTTPException(400, { message: error.message });
-  }
-});
-
 // 5. 删除角色
-app.on("DELETE", ["/{id}"], requirePermission("sys:role:delete"));
-
 const deleteRouteDoc = createRoute({
   method: "delete",
   path: "/{id}",
@@ -268,22 +191,6 @@ const deleteRouteDoc = createRoute({
       description: "删除成功",
     },
   },
-});
-
-app.openapi(deleteRouteDoc, async (c) => {
-  const id = Number(c.req.param("id"));
-  try {
-    await roleService.delete(id);
-    return c.json(
-      {
-        code: 0,
-        message: "角色删除成功",
-      },
-      200,
-    );
-  } catch (error: any) {
-    throw new HTTPException(400, { message: error.message });
-  }
 });
 
 // 6. 批量删除角色
@@ -319,16 +226,100 @@ const batchDeleteRouteDoc = createRoute({
   },
 });
 
+app.use("/list", requirePermission("sys:role:list"));
+app.use("/{id}", requirePermission("sys:role:list"));
+app.use("/create", requirePermission("sys:role:create"));
+app.on("PUT", ["/{id}"], requirePermission("sys:role:update"));
+app.on("DELETE", ["/{id}"], requirePermission("sys:role:delete"));
 app.use("/batch-delete", requirePermission("sys:role:delete"));
 
-app.openapi(batchDeleteRouteDoc, async (c) => {
-  const { ids } = c.req.valid("json");
-  try {
-    await roleService.deleteMany(ids);
-    return c.json({ code: 0, message: "角色批量删除成功" }, 200);
-  } catch (error: any) {
-    throw new HTTPException(400, { message: error.message });
-  }
-});
+const routes = app
+  .openapi(listRoute, async (c) => {
+    const pageQuery = c.req.query("page");
+    const pageSizeQuery = c.req.query("pageSize");
+    const page = pageQuery ? Number(pageQuery) : undefined;
+    const pageSize = pageSizeQuery ? Number(pageSizeQuery) : undefined;
 
-export default app;
+    const result = await roleService.list(page, pageSize);
+    return c.json(
+      {
+        code: 0,
+        data: result,
+      },
+      200,
+    );
+  })
+  .openapi(detailRoute, async (c) => {
+    const id = Number(c.req.param("id"));
+    try {
+      const detail = await roleService.detail(id);
+      return c.json(
+        {
+          code: 0,
+          data: detail,
+        },
+        200,
+      );
+    } catch (error: any) {
+      throw new HTTPException(404, { message: error.message });
+    }
+  })
+  .openapi(createRouteDoc, async (c) => {
+    const data = c.req.valid("json");
+    try {
+      const result = await roleService.create(data);
+      return c.json(
+        {
+          code: 0,
+          message: "角色创建成功",
+          data: result,
+        },
+        200,
+      );
+    } catch (error: any) {
+      throw new HTTPException(400, { message: error.message });
+    }
+  })
+  .openapi(updateRouteDoc, async (c) => {
+    const id = Number(c.req.param("id"));
+    const data = c.req.valid("json");
+    try {
+      const result = await roleService.update(id, data);
+      return c.json(
+        {
+          code: 0,
+          message: "角色修改成功",
+          data: result,
+        },
+        200,
+      );
+    } catch (error: any) {
+      throw new HTTPException(400, { message: error.message });
+    }
+  })
+  .openapi(deleteRouteDoc, async (c) => {
+    const id = Number(c.req.param("id"));
+    try {
+      await roleService.delete(id);
+      return c.json(
+        {
+          code: 0,
+          message: "角色删除成功",
+        },
+        200,
+      );
+    } catch (error: any) {
+      throw new HTTPException(400, { message: error.message });
+    }
+  })
+  .openapi(batchDeleteRouteDoc, async (c) => {
+    const { ids } = c.req.valid("json");
+    try {
+      await roleService.deleteMany(ids);
+      return c.json({ code: 0, message: "角色批量删除成功" }, 200);
+    } catch (error: any) {
+      throw new HTTPException(400, { message: error.message });
+    }
+  });
+
+export default routes;

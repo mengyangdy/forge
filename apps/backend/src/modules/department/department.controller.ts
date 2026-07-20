@@ -23,7 +23,6 @@ const updateSchema = z.object({
 });
 
 // 1. 获取部门列表
-app.use("/list", requirePermission("sys:dept:list"));
 const listRoute = createRoute({
   method: "get",
   path: "/list",
@@ -45,13 +44,7 @@ const listRoute = createRoute({
   },
 });
 
-app.openapi(listRoute, async (c) => {
-  const list = await departmentService.list();
-  return c.json({ code: 0, data: list }, 200);
-});
-
 // 2. 获取部门树形数据
-app.use("/tree", requirePermission("sys:dept:list"));
 const treeRoute = createRoute({
   method: "get",
   path: "/tree",
@@ -73,13 +66,7 @@ const treeRoute = createRoute({
   },
 });
 
-app.openapi(treeRoute, async (c) => {
-  const tree = await departmentService.tree();
-  return c.json({ code: 0, data: tree }, 200);
-});
-
 // 3. 获取部门详情
-app.use("/{id}", requirePermission("sys:dept:list"));
 const detailRoute = createRoute({
   method: "get",
   path: "/{id}",
@@ -106,13 +93,6 @@ const detailRoute = createRoute({
   },
 });
 
-app.openapi(detailRoute, async (c) => {
-  const id = Number(c.req.param("id"));
-  const detail = await departmentService.detail(id);
-  return c.json({ code: 0, data: detail }, 200);
-});
-
-app.use("/create", requirePermission("sys:dept:create"));
 // 4. 创建部门
 const createRouteDoc = createRoute({
   method: "post",
@@ -143,12 +123,6 @@ const createRouteDoc = createRoute({
       description: "创建成功",
     },
   },
-});
-
-app.openapi(createRouteDoc, async (c) => {
-  const data = c.req.valid("json");
-  const result = await departmentService.create(data);
-  return c.json({ code: 0, message: "部门创建成功", data: result }, 200);
 });
 
 // 5. 更新部门
@@ -186,13 +160,6 @@ const updateRouteDoc = createRoute({
   },
 });
 
-app.openapi(updateRouteDoc, async (c) => {
-  const id = Number(c.req.param("id"));
-  const data = c.req.valid("json");
-  const result = await departmentService.update(id, data);
-  return c.json({ code: 0, message: "部门修改成功", data: result }, 200);
-});
-
 // 6. 删除部门
 const deleteRouteDoc = createRoute({
   method: "delete",
@@ -218,12 +185,6 @@ const deleteRouteDoc = createRoute({
       description: "删除成功",
     },
   },
-});
-
-app.openapi(deleteRouteDoc, async (c) => {
-  const id = Number(c.req.param("id"));
-  await departmentService.delete(id);
-  return c.json({ code: 0, message: "部门删除成功" }, 200);
 });
 
 // 7. 批量删除部门
@@ -259,10 +220,45 @@ const batchDeleteRouteDoc = createRoute({
   },
 });
 
-app.openapi(batchDeleteRouteDoc, async (c) => {
-  const { ids } = c.req.valid("json");
-  await departmentService.deleteMany(ids);
-  return c.json({ code: 0, message: "部门批量删除成功" }, 200);
-});
+app.use("/list", requirePermission("sys:dept:list"));
+app.use("/tree", requirePermission("sys:dept:list"));
+app.use("/{id}", requirePermission("sys:dept:list"));
+app.use("/create", requirePermission("sys:dept:create"));
 
-export default app;
+const routes = app
+  .openapi(listRoute, async (c) => {
+    const list = await departmentService.list();
+    return c.json({ code: 0, data: list }, 200);
+  })
+  .openapi(treeRoute, async (c) => {
+    const tree = await departmentService.tree();
+    return c.json({ code: 0, data: tree }, 200);
+  })
+  .openapi(detailRoute, async (c) => {
+    const id = Number(c.req.param("id"));
+    const detail = await departmentService.detail(id);
+    return c.json({ code: 0, data: detail }, 200);
+  })
+  .openapi(createRouteDoc, async (c) => {
+    const data = c.req.valid("json");
+    const result = await departmentService.create(data);
+    return c.json({ code: 0, message: "部门创建成功", data: result }, 200);
+  })
+  .openapi(updateRouteDoc, async (c) => {
+    const id = Number(c.req.param("id"));
+    const data = c.req.valid("json");
+    const result = await departmentService.update(id, data);
+    return c.json({ code: 0, message: "部门修改成功", data: result }, 200);
+  })
+  .openapi(deleteRouteDoc, async (c) => {
+    const id = Number(c.req.param("id"));
+    await departmentService.delete(id);
+    return c.json({ code: 0, message: "部门删除成功" }, 200);
+  })
+  .openapi(batchDeleteRouteDoc, async (c) => {
+    const { ids } = c.req.valid("json");
+    await departmentService.deleteMany(ids);
+    return c.json({ code: 0, message: "部门批量删除成功" }, 200);
+  });
+
+export default routes;

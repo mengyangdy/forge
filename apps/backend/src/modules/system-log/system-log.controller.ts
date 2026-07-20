@@ -9,7 +9,6 @@ const app = new OpenAPIHono();
 app.use("*", authMiddleware);
 
 // 1. 查询系统访问日志接口文档定义
-app.use("/list", requirePermission("sys:log:list"));
 const accessListRoute = createRoute({
   method: "get",
   path: "/access/list",
@@ -40,6 +39,8 @@ const accessListRoute = createRoute({
                   ip: z.string().nullable(),
                   method: z.string(),
                   url: z.string(),
+                  requestParams: z.string().nullable(),
+                  responseData: z.string().nullable(),
                   status: z.number(),
                   duration: z.number(),
                   userAgent: z.string().nullable(),
@@ -57,7 +58,6 @@ const accessListRoute = createRoute({
 });
 
 // 2. 查询系统操作日志接口文档定义
-app.use("/operation-logs", requirePermission("sys:log:list"));
 const operationListRoute = createRoute({
   method: "get",
   path: "/operation/list",
@@ -93,6 +93,7 @@ const operationListRoute = createRoute({
                   module: z.string().nullable(),
                   action: z.string().nullable(),
                   requestParams: z.string().nullable(),
+                  responseData: z.string().nullable(),
                   status: z.number(),
                   duration: z.number(),
                   errorMessage: z.string().nullable(),
@@ -109,53 +110,54 @@ const operationListRoute = createRoute({
   },
 });
 
-// 实现路由逻辑：访问日志
-app.openapi(accessListRoute, async (c) => {
-  const page = Number(c.req.query("page") || 1);
-  const pageSize = Number(c.req.query("pageSize") || 10);
-  const username = c.req.query("username");
-  const method = c.req.query("method");
-  const statusStr = c.req.query("status");
-  const status = statusStr ? Number(statusStr) : undefined;
+app.use("/access/list", requirePermission("sys:log:list"));
+app.use("/operation/list", requirePermission("sys:log:list"));
 
-  const result = await systemLogService.listAccessLogs(page, pageSize, {
-    username,
-    method,
-    status,
+const routes = app
+  .openapi(accessListRoute, async (c) => {
+    const page = Number(c.req.query("page") || 1);
+    const pageSize = Number(c.req.query("pageSize") || 10);
+    const username = c.req.query("username");
+    const method = c.req.query("method");
+    const statusStr = c.req.query("status");
+    const status = statusStr ? Number(statusStr) : undefined;
+
+    const result = await systemLogService.listAccessLogs(page, pageSize, {
+      username,
+      method,
+      status,
+    });
+    return c.json(
+      {
+        code: 0,
+        data: result,
+      },
+      200,
+    );
+  })
+  .openapi(operationListRoute, async (c) => {
+    const page = Number(c.req.query("page") || 1);
+    const pageSize = Number(c.req.query("pageSize") || 10);
+    const username = c.req.query("username");
+    const module = c.req.query("module");
+    const action = c.req.query("action");
+    const statusStr = c.req.query("status");
+    const status = statusStr ? Number(statusStr) : undefined;
+
+    const result = await systemLogService.listOperationLogs(page, pageSize, {
+      username,
+      module,
+      action,
+      status,
+    });
+
+    return c.json(
+      {
+        code: 0,
+        data: result,
+      },
+      200,
+    );
   });
-  return c.json(
-    {
-      code: 0,
-      data: result,
-    },
-    200,
-  );
-});
 
-// 实现路由逻辑：操作日志
-app.openapi(operationListRoute, async (c) => {
-  const page = Number(c.req.query("page") || 1);
-  const pageSize = Number(c.req.query("pageSize") || 10);
-  const username = c.req.query("username");
-  const module = c.req.query("module");
-  const action = c.req.query("action");
-  const statusStr = c.req.query("status");
-  const status = statusStr ? Number(statusStr) : undefined;
-
-  const result = await systemLogService.listOperationLogs(page, pageSize, {
-    username,
-    module,
-    action,
-    status,
-  });
-
-  return c.json(
-    {
-      code: 0,
-      data: result,
-    },
-    200,
-  );
-});
-
-export default app;
+export default routes;

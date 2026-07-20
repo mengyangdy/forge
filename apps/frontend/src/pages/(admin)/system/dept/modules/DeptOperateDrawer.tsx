@@ -4,18 +4,25 @@ import type { FormApi } from "@douyinfe/semi-ui/lib/es/form";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import type { TableOperateType, TreeSelectOption } from "@/shared/web-ui-compose";
-import type { DeptListItem } from "@/service/api/department";
 import { useUserQuery } from "@/service/api/user/hooks";
-
-import { STATUS_OPTIONS } from "./constants";
+import { useDict } from "@/service/api/dict/hooks";
 
 export type DeptTreeOption = TreeSelectOption;
+
+interface DeptEditingData extends Record<string, unknown> {
+  id?: number | string | null;
+  leaderName?: string | null;
+  leaderUserId?: number | string | null;
+  name?: string | null;
+  parentId?: number | string | null;
+  status?: string | null;
+}
 
 interface DeptOperateDrawerProps {
   /** 上级部门树数据。 */
   deptTreeData?: DeptTreeOption[];
   /** 编辑时的当前行数据。 */
-  editingData: DeptListItem | null;
+  editingData: DeptEditingData | null;
 
   /** 关闭弹窗。 */
   onClose: () => void;
@@ -30,8 +37,6 @@ interface DeptOperateDrawerProps {
   /** 是否可见。 */
   visible: boolean;
 }
-
-const statusOptions = STATUS_OPTIONS.map((item) => ({ label: item.label, value: item.value }));
 
 /** 编辑时禁用「自身及其子孙」作为上级，避免形成环。 */
 function disableSelfSubtree(nodes: DeptTreeOption[], disabledId: number): DeptTreeOption[] {
@@ -67,6 +72,7 @@ const DeptOperateDrawer = ({
   submitting,
   visible,
 }: DeptOperateDrawerProps) => {
+  const { options: statusOptions } = useDict("sys_status");
   const formApiRef = useRef<FormApi | null>(null);
 
   const [searchKeyword, setSearchKeyword] = useState("");
@@ -86,11 +92,12 @@ const DeptOperateDrawer = ({
 
     // 回显保证：如果编辑状态下的负责人不在前100个列表里，手动合入以保证名称正常显示
     if (editingData?.leaderUserId && editingData?.leaderName) {
-      const hasLeader = list.some((item) => item.value === editingData.leaderUserId);
+      const leaderUserId = Number(editingData.leaderUserId);
+      const hasLeader = list.some((item) => item.value === leaderUserId);
       if (!hasLeader) {
         list.push({
           label: editingData.leaderName,
-          value: editingData.leaderUserId,
+          value: leaderUserId,
         });
       }
     }
@@ -112,10 +119,16 @@ const DeptOperateDrawer = ({
 
     if (operateType === "edit" && editingData) {
       api.setValues({
-        name: editingData.name,
-        parentId: editingData.parentId ?? undefined,
-        leaderUserId: editingData.leaderUserId ?? undefined,
-        status: editingData.status,
+        name: editingData.name ?? "",
+        parentId:
+          editingData.parentId !== null && editingData.parentId !== undefined
+            ? Number(editingData.parentId)
+            : undefined,
+        leaderUserId:
+          editingData.leaderUserId !== null && editingData.leaderUserId !== undefined
+            ? Number(editingData.leaderUserId)
+            : undefined,
+        status: editingData.status ?? "active",
       });
     } else {
       api.reset();
@@ -128,7 +141,7 @@ const DeptOperateDrawer = ({
 
   const treeData =
     operateType === "edit" && editingData
-      ? disableSelfSubtree(deptTreeData, editingData.id)
+      ? disableSelfSubtree(deptTreeData, Number(editingData.id))
       : deptTreeData;
 
   async function handleOk() {

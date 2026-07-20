@@ -3,14 +3,29 @@ import { Icon } from "@iconify/react";
 import type { FormApi } from "@douyinfe/semi-ui/lib/es/form";
 import { useEffect, useRef, useState } from "react";
 
-import type { PermissionListItem } from "@/service/api/permission";
 import type { TableOperateType, TreeSelectOption } from "@/shared/web-ui-compose";
+import { useDict } from "@/service/api/dict/hooks";
 
-import { TYPE_OPTIONS } from "./constants";
+interface MenuEditingData {
+  code?: string | null;
+  component?: string | null;
+  i18nKey?: string | null;
+  icon?: string | null;
+  iconType?: string | null;
+  id: number;
+  name: string;
+  order?: number | null;
+  parentId?: number | null;
+  pathParam?: string | null;
+  routeName?: string | null;
+  routePath?: string | null;
+  status?: string | null;
+  type: string;
+}
 
 export interface MenuItemEditProps {
   /** 编辑时的当前行数据。 */
-  editingData: PermissionListItem | null;
+  editingData: MenuEditingData | null;
   /** 上级菜单树数据。 */
   menuTreeData?: TreeSelectOption[];
   /** 关闭弹窗。 */
@@ -26,11 +41,6 @@ export interface MenuItemEditProps {
   /** 是否可见。 */
   visible: boolean;
 }
-
-const statusOptions = [
-  { label: "启用", value: "active" },
-  { label: "停用", value: "disabled" },
-];
 
 const iconTypeOptions = [
   { label: "Iconify", value: "iconify" },
@@ -73,6 +83,10 @@ const MenuItemEdit = ({
   submitting,
   visible,
 }: MenuItemEditProps) => {
+  const { options: allTypeOptions } = useDict("sys_permission_type");
+  const typeOptions = allTypeOptions.filter((opt) => opt.value !== "button");
+  const { options: statusOptions } = useDict("sys_status");
+
   const formApiRef = useRef<FormApi | null>(null);
   const [menuType, setMenuType] = useState<string>("menu");
   const [buttons, setButtons] = useState<{ code: string; name: string }[]>([]);
@@ -175,7 +189,7 @@ const MenuItemEdit = ({
           <Form.RadioGroup
             field="type"
             label="菜单类型"
-            options={TYPE_OPTIONS}
+            options={typeOptions}
             rules={[{ required: true, message: "请选择类型" }]}
           />
 

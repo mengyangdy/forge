@@ -81,7 +81,10 @@ function showRequestErrorModal(options: Parameters<RequestAdapter["showErrorModa
 }
 
 export const requestAdapter: RequestAdapter = {
-  fetchRefreshToken,
+  fetchRefreshToken: async (refreshToken: string) => {
+    const res = await fetchRefreshToken(refreshToken);
+    return { token: res.token, refreshToken };
+  },
   getCurrentPath() {
     return getRouter().state.location.href;
   },
@@ -92,8 +95,23 @@ export const requestAdapter: RequestAdapter = {
     return localStg.get("token") || null;
   },
   redirectToLogin(redirectPath?: string) {
+    let path = redirectPath || window.location.pathname + window.location.search;
+    if (path.startsWith("http://") || path.startsWith("https://")) {
+      try {
+        const url = new URL(path);
+        path = url.pathname + url.search;
+      } catch {
+        path = "/";
+      }
+    }
+    if (!path.startsWith("/")) {
+      path = `/${path}`;
+    }
+    if (path.startsWith("/login")) {
+      path = "/";
+    }
     // oxlint-disable-next-line no-void
-    void getRouter().navigate({ search: { redirect: redirectPath }, to: "/login-out" });
+    void getRouter().navigate({ search: { redirect: path }, to: "/login-out" });
   },
   resetAuth() {
     localStg.remove("token");

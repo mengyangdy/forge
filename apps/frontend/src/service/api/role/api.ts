@@ -1,47 +1,45 @@
-import { request } from "@/service/request";
+/**
+ * Role API 模块
+ *
+ * 基于 Hono RPC 客户端推导
+ */
 
-import type {
-  RoleCreateParams,
-  RoleDetailResponse,
-  RoleListResponse,
-  RoleSearchParams,
-  RoleUpdateParams,
-} from "./types";
+import { client, unwrap } from "@/service/client";
 
-const URLS = {
-  LIST: "/api/role/list",
-  DETAIL: "/api/role",
-  CREATE: "/api/role/create",
-} as const;
+import type { RoleCreateParams, RoleSearchParams, RoleUpdateParams } from "./types";
 
 export const roleApi = {
   list: (params: RoleSearchParams) => {
-    const { current: page, size: pageSize, ...rest } = params;
-    return request<RoleListResponse>({
-      method: "get",
-      url: URLS.LIST,
-      params: { page, pageSize, ...rest },
-    }).then((res) => res.data);
+    const { current: page, size: pageSize, name, code, dataScope } = params;
+    const queryParams: Record<string, string> = {
+      page: String(page),
+      pageSize: String(pageSize),
+    };
+    if (name) queryParams.name = name;
+    if (code) queryParams.code = code;
+    if (dataScope) queryParams.dataScope = dataScope;
+
+    return unwrap(client.api.role.list.$get({ query: queryParams }));
   },
+
   detail: (id: number) => {
-    return request<RoleDetailResponse>({
-      method: "get",
-      url: `${URLS.DETAIL}/${id}`,
-    }).then((res) => res.data);
+    return unwrap(client.api.role[":id"].$get({ param: { id: String(id) } }));
   },
+
   create: (data: RoleCreateParams) => {
-    return request({ method: "post", url: URLS.CREATE, data }).then((res) => res.data);
+    return unwrap(client.api.role.create.$post({ json: data }));
   },
+
   update: (id: number, data: RoleUpdateParams) => {
-    return request({ method: "put", url: `${URLS.DETAIL}/${id}`, data }).then((res) => res.data);
+    return unwrap(client.api.role[":id"].$put({ param: { id: String(id) }, json: data }));
   },
+
   remove: (id: number) => {
-    return request({ method: "delete", url: `${URLS.DETAIL}/${id}` }).then((res) => res.data);
+    return unwrap(client.api.role[":id"].$delete({ param: { id: String(id) } }));
   },
+
   batchRemove: (ids: number[]) => {
-    return request({ method: "post", url: `${URLS.DETAIL}/batch-delete`, data: { ids } }).then(
-      (res) => res.data,
-    );
+    return unwrap(client.api.role["batch-delete"].$post({ json: { ids } }));
   },
 };
 

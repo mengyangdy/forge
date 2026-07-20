@@ -1,3 +1,4 @@
+import "./types/hono.d.ts";
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { serve } from "@hono/node-server";
 import { cors } from "hono/cors";
@@ -81,9 +82,7 @@ app.get(
 
 // 挂载子路由器并进行链式调用，以导出类型安全的 AppType 路由定义
 // 统一使用 /api 前缀，避免在每个路由中重复添加
-const api = new OpenAPIHono();
-
-api
+const apiRoutes = new OpenAPIHono()
   .route("/auth", auth)
   .route("/user", user)
   .route("/role", role)
@@ -98,7 +97,7 @@ api
   .route("/route", route);
 
 // 将所有API路由挂载到 /api 路径下
-const routes = app.route("/api", api);
+const routes = app.route("/api", apiRoutes);
 
 const port = env.PORT;
 

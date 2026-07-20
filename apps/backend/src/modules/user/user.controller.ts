@@ -78,26 +78,6 @@ const listRoute = createRoute({
   },
 });
 
-// 使用中间件链进行权限检查
-app.use("/list", requirePermission("sys:user:list"));
-
-app.openapi(listRoute, async (c) => {
-  const page = Number(c.req.query("page") || 1);
-  const pageSize = Number(c.req.query("pageSize") || 10);
-  const username = c.req.query("username");
-  const nickname = c.req.query("nickname");
-  const status = c.req.query("status");
-
-  const result = await userService.list(page, pageSize, { username, nickname, status });
-  return c.json(
-    {
-      code: 0,
-      data: result,
-    },
-    200,
-  );
-});
-
 // 2. 获取用户详情
 const detailRoute = createRoute({
   method: "get",
@@ -134,25 +114,6 @@ const detailRoute = createRoute({
   },
 });
 
-// 使用中间件链进行权限检查
-app.use("/{id}", requirePermission("sys:user:list"));
-
-app.openapi(detailRoute, async (c) => {
-  const id = Number(c.req.param("id"));
-  try {
-    const detail = await userService.detail(id);
-    return c.json(
-      {
-        code: 0,
-        data: detail,
-      },
-      200,
-    );
-  } catch (error: any) {
-    throw new HTTPException(404, { message: error.message });
-  }
-});
-
 // 3. 创建用户
 const createRouteDoc = createRoute({
   method: "post",
@@ -183,25 +144,6 @@ const createRouteDoc = createRoute({
       description: "创建成功",
     },
   },
-});
-
-app.use("/create", requirePermission("sys:user:create"));
-
-app.openapi(createRouteDoc, async (c) => {
-  const data = c.req.valid("json");
-  try {
-    const result = await userService.create(data);
-    return c.json(
-      {
-        code: 0,
-        message: "用户创建成功",
-        data: result,
-      },
-      200,
-    );
-  } catch (error: any) {
-    throw new HTTPException(400, { message: error.message });
-  }
 });
 
 // 4. 更新用户
@@ -239,33 +181,6 @@ const updateRouteDoc = createRoute({
   },
 });
 
-// PUT 方法需要更新权限
-app.on("PUT", ["/{id}"], requirePermission("sys:user:update"));
-
-app.openapi(updateRouteDoc, async (c) => {
-  const id = Number(c.req.param("id"));
-  const data = c.req.valid("json");
-
-  // 如果传入密码是空字符串，不进行修改
-  if (data.password === "") {
-    delete data.password;
-  }
-
-  try {
-    const result = await userService.update(id, data as any);
-    return c.json(
-      {
-        code: 0,
-        message: "用户修改成功",
-        data: result,
-      },
-      200,
-    );
-  } catch (error: any) {
-    throw new HTTPException(400, { message: error.message });
-  }
-});
-
 // 5. 删除用户
 const deleteRouteDoc = createRoute({
   method: "delete",
@@ -291,25 +206,6 @@ const deleteRouteDoc = createRoute({
       description: "删除成功",
     },
   },
-});
-
-// DELETE 方法需要删除权限
-app.on("DELETE", ["/{id}"], requirePermission("sys:user:delete"));
-
-app.openapi(deleteRouteDoc, async (c) => {
-  const id = Number(c.req.param("id"));
-  try {
-    await userService.delete(id);
-    return c.json(
-      {
-        code: 0,
-        message: "用户删除成功",
-      },
-      200,
-    );
-  } catch (error: any) {
-    throw new HTTPException(400, { message: error.message });
-  }
 });
 
 // 6. 批量删除用户
@@ -345,16 +241,106 @@ const batchDeleteRouteDoc = createRoute({
   },
 });
 
+app.use("/list", requirePermission("sys:user:list"));
+app.use("/{id}", requirePermission("sys:user:list"));
+app.use("/create", requirePermission("sys:user:create"));
+app.on("PUT", ["/{id}"], requirePermission("sys:user:update"));
+app.on("DELETE", ["/{id}"], requirePermission("sys:user:delete"));
 app.use("/batch-delete", requirePermission("sys:user:delete"));
 
-app.openapi(batchDeleteRouteDoc, async (c) => {
-  const { ids } = c.req.valid("json");
-  try {
-    await userService.deleteMany(ids);
-    return c.json({ code: 0, message: "用户批量删除成功" }, 200);
-  } catch (error: any) {
-    throw new HTTPException(400, { message: error.message });
-  }
-});
+const routes = app
+  .openapi(listRoute, async (c) => {
+    const page = Number(c.req.query("page") || 1);
+    const pageSize = Number(c.req.query("pageSize") || 10);
+    const username = c.req.query("username");
+    const nickname = c.req.query("nickname");
+    const status = c.req.query("status");
 
-export default app;
+    const result = await userService.list(page, pageSize, { username, nickname, status });
+    return c.json(
+      {
+        code: 0,
+        data: result,
+      },
+      200,
+    );
+  })
+  .openapi(detailRoute, async (c) => {
+    const id = Number(c.req.param("id"));
+    try {
+      const detail = await userService.detail(id);
+      return c.json(
+        {
+          code: 0,
+          data: detail,
+        },
+        200,
+      );
+    } catch (error: any) {
+      throw new HTTPException(404, { message: error.message });
+    }
+  })
+  .openapi(createRouteDoc, async (c) => {
+    const data = c.req.valid("json");
+    try {
+      const result = await userService.create(data);
+      return c.json(
+        {
+          code: 0,
+          message: "用户创建成功",
+          data: result,
+        },
+        200,
+      );
+    } catch (error: any) {
+      throw new HTTPException(400, { message: error.message });
+    }
+  })
+  .openapi(updateRouteDoc, async (c) => {
+    const id = Number(c.req.param("id"));
+    const data = c.req.valid("json");
+
+    if (data.password === "") {
+      delete data.password;
+    }
+
+    try {
+      const result = await userService.update(id, data as any);
+      return c.json(
+        {
+          code: 0,
+          message: "用户修改成功",
+          data: result,
+        },
+        200,
+      );
+    } catch (error: any) {
+      throw new HTTPException(400, { message: error.message });
+    }
+  })
+  .openapi(deleteRouteDoc, async (c) => {
+    const id = Number(c.req.param("id"));
+    try {
+      await userService.delete(id);
+      return c.json(
+        {
+          code: 0,
+          message: "用户删除成功",
+        },
+        200,
+      );
+    } catch (error: any) {
+      throw new HTTPException(400, { message: error.message });
+    }
+  })
+  .openapi(batchDeleteRouteDoc, async (c) => {
+    const { ids } = c.req.valid("json");
+    try {
+      await userService.deleteMany(ids);
+      return c.json({ code: 0, message: "用户批量删除成功" }, 200);
+    } catch (error: any) {
+      throw new HTTPException(400, { message: error.message });
+    }
+  });
+
+export default routes;

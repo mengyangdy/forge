@@ -61,29 +61,6 @@ const registerRoute = createRoute({
   },
 });
 
-app.openapi(registerRoute, async (c) => {
-  try {
-    const { username, password, nickname, phone } = c.req.valid("json");
-    const result = await authService.register(username, password, nickname, phone);
-    return c.json(
-      {
-        code: 0,
-        message: "注册成功，欢迎加入 Forge！",
-        data: result,
-      },
-      200,
-    );
-  } catch (error: any) {
-    const status =
-      error.message.includes("已被注册") ||
-      error.message.includes("已被使用") ||
-      error.message.includes("已被")
-        ? 400
-        : 500;
-    throw new HTTPException(status, { message: error.message });
-  }
-});
-
 // 2. 初始化超级管理员用户
 const initAdminRoute = createRoute({
   method: "post",
@@ -107,23 +84,6 @@ const initAdminRoute = createRoute({
       description: "初始化成功",
     },
   },
-});
-
-app.openapi(initAdminRoute, async (c) => {
-  try {
-    const result = await authService.initAdmin();
-    return c.json(
-      {
-        code: 0,
-        message: "Forge 初始超管账号制造成功！",
-        data: result,
-      },
-      200,
-    );
-  } catch (error: any) {
-    const status = error.message.includes("已初始化") ? 400 : 500;
-    throw new HTTPException(status, { message: error.message });
-  }
 });
 
 const passwordLoginSchema = z.object({
@@ -174,26 +134,6 @@ const loginRoute = createRoute({
   },
 });
 
-app.openapi(loginRoute, async (c) => {
-  try {
-    const body = c.req.valid("json");
-    console.log("🚀 ~ login request body:", body);
-    const ip = c.req.header("x-forwarded-for") || c.req.header("x-real-ip") || null;
-    const userAgent = c.req.header("user-agent") || null;
-    const result = await authService.login(body, ip, userAgent);
-    console.log("🚀 ~ login result:", result);
-    return c.json(success(result, "登录成功"), 200);
-  } catch (error: any) {
-    const status =
-      error.message.includes("错误") ||
-      error.message.includes("禁用") ||
-      error.message.includes("验证码")
-        ? 400
-        : 500;
-    throw new HTTPException(status, { message: error.message });
-  }
-});
-
 // 4. 刷新token
 const refreshTokenRoute = createRoute({
   method: "post",
@@ -226,23 +166,6 @@ const refreshTokenRoute = createRoute({
   },
 });
 
-app.openapi(refreshTokenRoute, async (c) => {
-  try {
-    const { refreshToken } = c.req.valid("json");
-    const result = await authService.refreshToken(refreshToken);
-    return c.json(
-      {
-        code: 0,
-        data: result,
-      },
-      200,
-    );
-  } catch (error: any) {
-    const status = error.message.includes("过期") || error.message.includes("失效") ? 401 : 403;
-    throw new HTTPException(status, { message: error.message });
-  }
-});
-
 // 5. 登出
 const logoutRoute = createRoute({
   method: "post",
@@ -273,22 +196,6 @@ const logoutRoute = createRoute({
   },
 });
 
-app.openapi(logoutRoute, async (c) => {
-  try {
-    const { userId } = c.req.valid("json");
-    await authService.logout(userId);
-    return c.json(
-      {
-        code: 0,
-        message: "已安全退出登录",
-      },
-      200,
-    );
-  } catch (error: any) {
-    throw new HTTPException(500, { message: "退出登录失败: " + error.message });
-  }
-});
-
 // 6. 获取用户信息
 const getUserInfoRoute = createRoute({
   method: "get",
@@ -315,30 +222,6 @@ const getUserInfoRoute = createRoute({
       description: "成功获取用户信息",
     },
   },
-});
-
-app.use("/getUserInfo", authMiddleware);
-
-app.openapi(getUserInfoRoute, async (c) => {
-  console.log("🚀 ~ :316 ~ c:", c);
-  const currentUser = c.get("currentUser");
-  if (!currentUser) {
-    throw new HTTPException(401, { message: "未登录或登录状态已失效" });
-  }
-
-  return c.json(
-    {
-      code: 0,
-      data: {
-        userId: String(currentUser.id),
-        username: currentUser.username,
-        nickname: currentUser.nickname,
-        roles: currentUser.roles,
-        buttons: currentUser.permissions,
-      },
-    },
-    200,
-  );
 });
 
 // 7. 重置密码
@@ -377,15 +260,125 @@ const resetPasswordRoute = createRoute({
   },
 });
 
-app.openapi(resetPasswordRoute, async (c) => {
-  try {
-    const { phone, password } = c.req.valid("json");
-    await authService.resetPasswordByPhone(phone, password);
-    return c.json({ code: 0, message: "密码重置成功，请使用新密码重新登录" }, 200);
-  } catch (error: any) {
-    const status = error.message.includes("未绑定") || error.message.includes("不存在") ? 400 : 500;
-    throw new HTTPException(status, { message: error.message });
-  }
-});
+app.use("/getUserInfo", authMiddleware);
 
-export default app;
+const routes = app
+  .openapi(registerRoute, async (c) => {
+    try {
+      const { username, password, nickname, phone } = c.req.valid("json");
+      const result = await authService.register(username, password, nickname, phone);
+      return c.json(
+        {
+          code: 0,
+          message: "注册成功，欢迎加入 Forge！",
+          data: result,
+        },
+        200,
+      );
+    } catch (error: any) {
+      const status =
+        error.message.includes("已被注册") ||
+        error.message.includes("已被使用") ||
+        error.message.includes("已被")
+          ? 400
+          : 500;
+      throw new HTTPException(status, { message: error.message });
+    }
+  })
+  .openapi(initAdminRoute, async (c) => {
+    try {
+      const result = await authService.initAdmin();
+      return c.json(
+        {
+          code: 0,
+          message: "Forge 初始超管账号制造成功！",
+          data: result,
+        },
+        200,
+      );
+    } catch (error: any) {
+      const status = error.message.includes("已初始化") ? 400 : 500;
+      throw new HTTPException(status, { message: error.message });
+    }
+  })
+  .openapi(loginRoute, async (c) => {
+    try {
+      const body = c.req.valid("json");
+      const ip = c.req.header("x-forwarded-for") || c.req.header("x-real-ip") || null;
+      const userAgent = c.req.header("user-agent") || null;
+      const result = await authService.login(body, ip, userAgent);
+      return c.json(success(result, "登录成功"), 200);
+    } catch (error: any) {
+      const status =
+        error.message.includes("错误") ||
+        error.message.includes("禁用") ||
+        error.message.includes("验证码")
+          ? 400
+          : 500;
+      throw new HTTPException(status, { message: error.message });
+    }
+  })
+  .openapi(refreshTokenRoute, async (c) => {
+    try {
+      const { refreshToken } = c.req.valid("json");
+      const result = await authService.refreshToken(refreshToken);
+      return c.json(
+        {
+          code: 0,
+          data: result,
+        },
+        200,
+      );
+    } catch (error: any) {
+      const status = error.message.includes("过期") || error.message.includes("失效") ? 401 : 403;
+      throw new HTTPException(status, { message: error.message });
+    }
+  })
+  .openapi(logoutRoute, async (c) => {
+    try {
+      const { userId } = c.req.valid("json");
+      await authService.logout(userId);
+      return c.json(
+        {
+          code: 0,
+          message: "已安全退出登录",
+        },
+        200,
+      );
+    } catch (error: any) {
+      throw new HTTPException(500, { message: "退出登录失败: " + error.message });
+    }
+  })
+  .openapi(getUserInfoRoute, async (c) => {
+    const currentUser = c.get("currentUser");
+    if (!currentUser) {
+      throw new HTTPException(401, { message: "未登录或登录状态已失效" });
+    }
+
+    return c.json(
+      {
+        code: 0,
+        data: {
+          userId: String(currentUser.id),
+          username: currentUser.username,
+          nickname: currentUser.nickname,
+          roles: currentUser.roles,
+          buttons: currentUser.permissions,
+        },
+      },
+      200,
+    );
+  })
+  .openapi(resetPasswordRoute, async (c) => {
+    try {
+      const { phone, password } = c.req.valid("json");
+      await authService.resetPasswordByPhone(phone, password);
+      return c.json({ code: 0, message: "密码重置成功，请使用新密码重新登录" }, 200);
+    } catch (error: any) {
+      const status =
+        error.message.includes("未绑定") || error.message.includes("不存在") ? 400 : 500;
+      throw new HTTPException(status, { message: error.message });
+    }
+  });
+
+export default routes;

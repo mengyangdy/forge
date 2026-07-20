@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { SystemLogo, UserAvatar } from "@/components";
 import { guardAdminRoute } from "@/features/router/guard";
 import type { AdminRouteGuardOptions, AdminRouteGuardResult } from "@/features/router/guard";
+import { useAllDictsQuery } from "@/service/api/dict/hooks";
 
 const AdminFooter = () => {
   return (
@@ -24,6 +25,7 @@ const AdminFooter = () => {
 
 const AdminLayout = () => {
   const { t } = useTranslation();
+  useAllDictsQuery(); // 预加载并全局缓存所有数据字典项
 
   return (
     <WebAdminLayout

@@ -1,70 +1,35 @@
 /**
- * User 模块类型定义
- *
- * 与后端 user.controller.ts 的 OpenAPI schema 保持一致。
+ * User 模块类型定义（从后端 Hono RPC 自动推导）
  */
 
-/** 用户角色。 */
-export interface UserRole {
-  id: number;
-  code: string;
-  name: string;
-}
+import type { client, InferResponseType } from "@/service/client";
 
-/** 用户状态。 */
-export type UserStatus = "active" | "disabled";
+type UserListEnvelope = InferResponseType<typeof client.api.user.list.$get>;
 
-/** 用户列表项。 */
-export interface UserListItem {
-  id: number;
-  username: string;
-  phone: string | null;
-  nickname: string | null;
-  avatar: string | null;
-  status: UserStatus;
-  departmentId: number;
-  createdAt: string;
-  updatedAt: string;
-  roles: UserRole[];
-}
+/** 用户列表接口响应 */
+export type UserListResponse = UserListEnvelope extends { data: infer D } ? D : never;
 
-/** 用户列表接口响应。 */
-export interface UserListResponse {
-  list: UserListItem[];
-  total: number;
-}
+/** 用户列表项 */
+export type UserListItem = UserListResponse extends { list: (infer Item)[] } ? Item : never;
 
-/** 新增用户参数（对齐后端 create schema）。 */
-export interface UserCreateParams {
-  username: string;
-  password?: string;
-  nickname?: string | null;
-  status: UserStatus;
-  departmentId: number;
-  roleIds: number[];
-}
+/** 用户角色 */
+export type UserRole = UserListItem extends { roles: (infer R)[] } ? R : never;
 
-/** 更新用户参数（对齐后端 update schema）。 */
-export interface UserUpdateParams {
-  nickname?: string | null;
-  status: UserStatus;
-  departmentId: number;
-  roleIds: number[];
-  password?: string;
-}
+/** 用户状态 */
+export type UserStatus = UserListItem["status"];
 
-/** 用户列表查询参数。 */
+/** 新增用户参数（自动对齐后端 create schema） */
+export type UserCreateParams = Parameters<typeof client.api.user.create.$post>[0]["json"];
+
+/** 更新用户参数（自动对齐后端 update schema） */
+export type UserUpdateParams = Parameters<(typeof client.api.user)[":id"]["$put"]>[0]["json"];
+
+/** 用户列表查询参数 */
 export interface UserSearchParams {
-  /** 当前页码（useTable 内部使用）。 */
   current: number;
-  /** 每页条数（useTable 内部使用）。 */
   size: number;
-  /** 用户名模糊搜索。 */
   username?: string;
-  /** 昵称模糊搜索。 */
   nickname?: string;
-  /** 手机号模糊搜索。 */
   phone?: string;
-  /** 状态筛选。 */
   status?: UserStatus;
 }

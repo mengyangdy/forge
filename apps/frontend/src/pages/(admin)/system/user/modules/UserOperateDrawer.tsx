@@ -4,8 +4,7 @@ import { useEffect, useRef } from "react";
 
 import type { SelectOption, TableOperateType, TreeSelectOption } from "@/shared/web-ui-compose";
 import type { UserListItem } from "@/service/api/user";
-
-import { STATUS_OPTIONS } from "./constants";
+import { useDict } from "@/service/api/dict/hooks";
 
 export type DeptTreeOption = TreeSelectOption;
 
@@ -28,8 +27,6 @@ interface UserOperateDrawerProps {
   visible: boolean;
 }
 
-const statusOptions = STATUS_OPTIONS.map((item) => ({ label: item.label, value: item.value }));
-
 const UserOperateDrawer = ({
   deptTreeData = [],
   editingData,
@@ -40,6 +37,7 @@ const UserOperateDrawer = ({
   submitting,
   visible,
 }: UserOperateDrawerProps) => {
+  const { options: statusOptions } = useDict("sys_status");
   const formApiRef = useRef<FormApi | null>(null);
 
   useEffect(() => {
@@ -52,7 +50,7 @@ const UserOperateDrawer = ({
       api.setValues({
         username: editingData.username,
         nickname: editingData.nickname ?? "",
-        phone: editingData.phone ?? "",
+        phone: (editingData as any).phone ?? "",
         status: editingData.status,
         departmentId: editingData.departmentId,
         roleIds: editingData.roles?.map((role) => role.id) ?? [],

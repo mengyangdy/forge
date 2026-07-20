@@ -27,9 +27,9 @@ const Register = () => {
   async function handleSubmit(params: FormModel) {
     try {
       await registerUser({
+        username: params.phone,
         phone: params.phone,
         password: params.password,
-        code: params.code,
       });
       showSemiSuccessToast("注册成功，请登录");
       void navigate({ to: "/login" });

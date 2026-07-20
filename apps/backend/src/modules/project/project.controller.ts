@@ -43,25 +43,19 @@ const listRoute = createRoute({
   },
 });
 
-app.openapi(listRoute, async (c) => {
+const routes = app.openapi(listRoute, async (c) => {
   const currentUser = c.get("currentUser");
 
-  // 1. 根据当前登录人，获取其被允许查询的部门 ID 数组
   const scope = await getDataScopeDeptIds(currentUser);
 
-  // 2. 构建 Drizzle 查询条件
   const whereClauses = [];
 
   if (scope === "self") {
-    // 仅本人数据权限
     whereClauses.push(eq(projects.creatorId, currentUser.id));
   } else if (Array.isArray(scope)) {
-    // 部门限制
     whereClauses.push(inArray(projects.departmentId, scope));
   }
-  // 若为 'all'，则不限制，可查全表
 
-  // 3. 执行查询并 Join 创建人与部门名称
   const list = await db
     .select({
       id: projects.id,
@@ -90,4 +84,4 @@ app.openapi(listRoute, async (c) => {
   );
 });
 
-export default app;
+export default routes;

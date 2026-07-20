@@ -10,10 +10,12 @@ type UserColumn = SemiTableColumn<UserRecord>;
 interface CreateUserColumnsOptions {
   onDelete: (record: UserRecord) => void;
   onEdit: (record: UserRecord) => void;
+  translateStatus?: (value: string) => string;
+  getStatusColor?: (value: string) => string;
 }
 
 export function createUserColumns(options: CreateUserColumnsOptions): UserColumn[] {
-  const { onDelete, onEdit } = options;
+  const { onDelete, onEdit, translateStatus, getStatusColor } = options;
 
   return [
     {
@@ -54,11 +56,15 @@ export function createUserColumns(options: CreateUserColumnsOptions): UserColumn
       dataIndex: "status",
       key: "status",
       width: 100,
-      render: (value: UserStatus) => (
-        <Tag color={value === "active" ? "green" : "red"}>
-          {value === "active" ? "启用" : "停用"}
-        </Tag>
-      ),
+      render: (value: UserStatus) => {
+        const color = getStatusColor ? getStatusColor(value) : value === "active" ? "green" : "red";
+        const label = translateStatus
+          ? translateStatus(value)
+          : value === "active"
+            ? "启用"
+            : "停用";
+        return <Tag color={color as any}>{label}</Tag>;
+      },
     },
     {
       title: "创建时间",

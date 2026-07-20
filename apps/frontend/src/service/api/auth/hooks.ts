@@ -4,6 +4,7 @@
 
 import { queryOptions, useMutation, useQuery } from "@tanstack/react-query";
 
+import type { LoginParams, RegisterParams, ResetPasswordParams } from "./api";
 import { fetchGetUserInfo, fetchLogin, fetchRegister, fetchResetPassword } from "./api";
 
 export const AUTH_QUERY_KEYS = {
@@ -41,7 +42,7 @@ export function queryUserInfoOptions() {
  */
 export function useLoginMutation() {
   return useMutation({
-    mutationFn: (params: Api.Auth.LoginParams) => fetchLogin(params),
+    mutationFn: (params: LoginParams) => fetchLogin(params),
     mutationKey: AUTH_MUTATION_KEYS.LOGIN,
     retry: false,
   });
@@ -61,7 +62,7 @@ export function useUserInfoQuery() {
  */
 export function useRegisterMutation() {
   return useMutation({
-    mutationFn: (params: Api.Auth.RegisterParams) => fetchRegister(params),
+    mutationFn: (params: RegisterParams) => fetchRegister(params),
     mutationKey: ["auth", "register"] as const,
     retry: false,
   });
@@ -72,7 +73,7 @@ export function useRegisterMutation() {
  */
 export function useResetPasswordMutation() {
   return useMutation({
-    mutationFn: (params: Api.Auth.ResetPasswordParams) => fetchResetPassword(params),
+    mutationFn: (params: ResetPasswordParams) => fetchResetPassword(params),
     mutationKey: ["auth", "resetPassword"] as const,
     retry: false,
   });

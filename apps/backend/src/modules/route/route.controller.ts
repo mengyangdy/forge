@@ -32,7 +32,7 @@ const getReactUserRoutesRoute = createRoute({
   },
 });
 
-app.openapi(getReactUserRoutesRoute, async (c) => {
+const routes = app.openapi(getReactUserRoutesRoute, async (c) => {
   const currentUser = c.get("currentUser");
   if (!currentUser) {
     throw new HTTPException(401, { message: "未登录或登录状态已失效" });
@@ -48,4 +48,4 @@ app.openapi(getReactUserRoutesRoute, async (c) => {
   );
 });
 
-export default app;
+export default routes;

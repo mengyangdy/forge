@@ -27,8 +27,9 @@ import { useDeptTreeQuery } from "@/service/api/department";
 import type { DeptTreeNode } from "@/service/api/department";
 
 import { createUserColumns } from "./columns";
-import { STATUS_OPTIONS, USER_TABLE_SCROLL_X } from "./constants";
+import { USER_TABLE_SCROLL_X } from "./constants";
 import UserOperateDrawer from "./UserOperateDrawer";
+import { useDict } from "@/service/api/dict/hooks";
 
 type UserRecord = TableDataWithIndex<UserListItem>;
 
@@ -43,6 +44,12 @@ function toDeptTreeData(nodes: DeptTreeNode[]): TreeSelectOption[] {
 }
 
 const UserPage = () => {
+  const {
+    options: statusOptions,
+    translate: translateStatus,
+    getTagColor: getStatusColor,
+  } = useDict("sys_status");
+
   // 用 ref 承接行内操作回调，避免 columns 工厂在 useSemiTable 内被调用时出现 TDZ。
   const editHandlerRef = useRef<(record: UserRecord) => void>(() => {});
   const deleteHandlerRef = useRef<(record: UserRecord) => void>(() => {});
@@ -58,6 +65,8 @@ const UserPage = () => {
       createUserColumns({
         onDelete: (record) => deleteHandlerRef.current(record),
         onEdit: (record) => editHandlerRef.current(record),
+        translateStatus,
+        getStatusColor,
       }),
     queryHook: useUserQuery,
   });
@@ -120,7 +129,7 @@ const UserPage = () => {
           <Form.Select
             field="status"
             label="状态"
-            optionList={[...STATUS_OPTIONS]}
+            optionList={statusOptions}
             placeholder="请选择状态"
             showClear
             style={{ width: "100%" }}

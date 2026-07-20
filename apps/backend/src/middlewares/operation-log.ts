@@ -104,7 +104,18 @@ export const operationLogMiddleware = async (c: Context, next: Next) => {
       errorMessage = c.error.message || String(c.error);
     }
 
-    // 2. 提取操作人身份（支持已登录用户或登录接口中的用户名）
+    // 2. 提取响应反参 (Response Data)
+    let responseData: string | null = null;
+    if (c.res) {
+      try {
+        const clonedRes = c.res.clone();
+        const resText = await clonedRes.text();
+        responseData =
+          resText.length > 5000 ? `${resText.substring(0, 5000)}... [已截断]` : resText;
+      } catch {}
+    }
+
+    // 3. 提取操作人身份（支持已登录用户或登录接口中的用户名）
     const currentUser = c.get("currentUser");
     let userId = currentUser?.id || null;
     let username = currentUser?.username || null;
@@ -117,7 +128,7 @@ export const operationLogMiddleware = async (c: Context, next: Next) => {
     const ip = c.req.header("x-forwarded-for") || c.req.header("x-real-ip") || null;
     const { module, action } = getModuleAndAction(method, path);
 
-    // 3. 异步写入 PostgreSQL 数据库的 operation_logs 表中
+    // 4. 异步写入 PostgreSQL 数据库的 operation_logs 表中
     try {
       await db.insert(operationLogs).values({
         userId,
@@ -129,6 +140,7 @@ export const operationLogMiddleware = async (c: Context, next: Next) => {
         module,
         action,
         requestParams: requestParams ? JSON.stringify(requestParams) : null,
+        responseData,
         status,
         duration,
         errorMessage,

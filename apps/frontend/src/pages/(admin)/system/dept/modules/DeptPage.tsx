@@ -30,12 +30,12 @@ import type {
 } from "@/service/api/department";
 
 import { createDeptColumns } from "./columns";
-import { STATUS_OPTIONS } from "./constants";
 import DeptOperateDrawer from "./DeptOperateDrawer";
+import { useDict } from "@/service/api/dict/hooks";
 
 type DeptRecord = TableDataWithIndex<DeptTreeNode>;
 
-/** 部门树 → Semi TreeSelect 数据结构。仅保留启用状态的部门作为上级部门选项。 */
+/** 部门树 → Semi TreeSelect 数据结构。仅保留启用状态 of 部门作为上级部门选项。 */
 function toDeptTreeData(nodes: DeptTreeNode[]): TreeSelectOption[] {
   return nodes
     .filter((node) => node.status !== "disabled")
@@ -56,6 +56,12 @@ function flattenDeptTree(nodes: DeptRecord[]): DeptRecord[] {
 }
 
 const DeptPage = () => {
+  const {
+    options: statusOptions,
+    translate: translateStatus,
+    getTagColor: getStatusColor,
+  } = useDict("sys_status");
+
   // 用 ref 承接行内操作回调，避免 columns 工厂在 useSemiTable 内被调用时出现 TDZ。
   const addChildHandlerRef = useRef<(record: DeptRecord) => void>(() => {});
   const editHandlerRef = useRef<(record: DeptRecord) => void>(() => {});
@@ -72,6 +78,8 @@ const DeptPage = () => {
         onAddChild: (record) => addChildHandlerRef.current(record),
         onDelete: (record) => deleteHandlerRef.current(record),
         onEdit: (record) => editHandlerRef.current(record),
+        translateStatus,
+        getStatusColor,
       }),
     queryHook: useDeptTreeTableQuery,
     queryOptions: { placeholderData: keepPreviousData },
@@ -165,7 +173,7 @@ const DeptPage = () => {
           <Form.Select
             field="status"
             label="状态"
-            optionList={STATUS_OPTIONS}
+            optionList={statusOptions}
             placeholder="请选择状态"
             showClear
             style={{ width: "100%" }}

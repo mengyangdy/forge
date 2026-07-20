@@ -245,13 +245,15 @@ async function refreshAccessToken(refreshToken: string) {
   return refreshTokenPromise;
 }
 
-async function redirectToLogin(redirectPath = window.location.href) {
+async function redirectToLogin(redirectPath = window.location.pathname + window.location.search) {
   const adapter = await getRequestAdapter();
   adapter.resetAuth();
   adapter.redirectToLogin(redirectPath);
 }
 
-async function resetAuthAndRedirect(redirectPath = window.location.href) {
+async function resetAuthAndRedirect(
+  redirectPath = window.location.pathname + window.location.search,
+) {
   const adapter = await getRequestAdapter();
   adapter.resetAuth();
   adapter.redirectToLogin(redirectPath);

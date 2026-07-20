@@ -241,6 +241,7 @@ async function main() {
     name: "用户性别",
     type: "sys_user_sex",
     status: "active",
+    isSystem: "Y",
     description: "用户性别字典列表",
   });
   await db.insert(dictData).values([
@@ -250,6 +251,7 @@ async function main() {
       value: "0",
       sort: 1,
       listClass: "info",
+      isDefault: "Y",
       status: "active",
     },
     {
@@ -258,6 +260,7 @@ async function main() {
       value: "1",
       sort: 2,
       listClass: "primary",
+      isDefault: "N",
       status: "active",
     },
     {
@@ -266,6 +269,7 @@ async function main() {
       value: "2",
       sort: 3,
       listClass: "success",
+      isDefault: "N",
       status: "active",
     },
   ]);
@@ -275,6 +279,7 @@ async function main() {
     name: "系统状态",
     type: "sys_status",
     status: "active",
+    isSystem: "Y",
     description: "系统通用启用禁用状态列表",
   });
   await db.insert(dictData).values([
@@ -284,6 +289,7 @@ async function main() {
       value: "active",
       sort: 1,
       listClass: "success",
+      isDefault: "Y",
       status: "active",
     },
     {
@@ -292,6 +298,101 @@ async function main() {
       value: "disabled",
       sort: 2,
       listClass: "danger",
+      isDefault: "N",
+      status: "active",
+    },
+  ]);
+
+  // 字典类型 3：数据权限范围
+  await db.insert(dictTypes).values({
+    name: "数据权限范围",
+    type: "sys_data_scope",
+    status: "active",
+    isSystem: "Y",
+    description: "角色数据权限范围，对应 roles 表的 dataScope 字段",
+  });
+  await db.insert(dictData).values([
+    {
+      dictType: "sys_data_scope",
+      label: "仅本人数据权限",
+      value: "self",
+      sort: 1,
+      listClass: "warning",
+      isDefault: "Y",
+      status: "active",
+    },
+    {
+      dictType: "sys_data_scope",
+      label: "本部门数据权限",
+      value: "dept",
+      sort: 2,
+      listClass: "info",
+      isDefault: "N",
+      status: "active",
+    },
+    {
+      dictType: "sys_data_scope",
+      label: "本部门及以下数据权限",
+      value: "dept_child",
+      sort: 3,
+      listClass: "primary",
+      isDefault: "N",
+      status: "active",
+    },
+    {
+      dictType: "sys_data_scope",
+      label: "全部数据权限",
+      value: "all",
+      sort: 4,
+      listClass: "success",
+      isDefault: "N",
+      status: "active",
+    },
+    {
+      dictType: "sys_data_scope",
+      label: "自定义数据权限",
+      value: "custom",
+      sort: 5,
+      listClass: "danger",
+      isDefault: "N",
+      status: "active",
+    },
+  ]);
+
+  // 字典类型 4：权限菜单类型
+  await db.insert(dictTypes).values({
+    name: "权限菜单类型",
+    type: "sys_permission_type",
+    status: "active",
+    isSystem: "Y",
+    description: "系统权限及菜单项的类型",
+  });
+  await db.insert(dictData).values([
+    {
+      dictType: "sys_permission_type",
+      label: "目录",
+      value: "catalogue",
+      sort: 1,
+      listClass: "primary",
+      isDefault: "N",
+      status: "active",
+    },
+    {
+      dictType: "sys_permission_type",
+      label: "菜单",
+      value: "menu",
+      sort: 2,
+      listClass: "success",
+      isDefault: "Y",
+      status: "active",
+    },
+    {
+      dictType: "sys_permission_type",
+      label: "按钮",
+      value: "button",
+      sort: 3,
+      listClass: "info",
+      isDefault: "N",
       status: "active",
     },
   ]);
