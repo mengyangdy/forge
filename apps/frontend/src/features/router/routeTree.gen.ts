@@ -24,6 +24,7 @@ import { Route as adminMonitorIndexRouteImport } from './../../pages/(admin)/mon
 import { Route as adminLogIndexRouteImport } from './../../pages/(admin)/log/index'
 import { Route as adminHomeIndexRouteImport } from './../../pages/(admin)/home/index'
 import { Route as adminDictIndexRouteImport } from './../../pages/(admin)/dict/index'
+import { Route as adminAiIndexRouteImport } from './../../pages/(admin)/ai/index'
 import { Route as authLoginResetPwdIndexRouteImport } from './../../pages/(auth)/login/reset-pwd/index'
 import { Route as authLoginRegisterIndexRouteImport } from './../../pages/(auth)/login/register/index'
 import { Route as authLoginCodeLoginIndexRouteImport } from './../../pages/(auth)/login/code-login/index'
@@ -36,6 +37,8 @@ import { Route as adminMonitorOnlineIndexRouteImport } from './../../pages/(admi
 import { Route as adminMonitorJobIndexRouteImport } from './../../pages/(admin)/monitor/job/index'
 import { Route as adminLogOperationIndexRouteImport } from './../../pages/(admin)/log/operation/index'
 import { Route as adminLogAccessIndexRouteImport } from './../../pages/(admin)/log/access/index'
+import { Route as adminAiCustomIndexRouteImport } from './../../pages/(admin)/ai/custom/index'
+import { Route as adminAiChatIndexRouteImport } from './../../pages/(admin)/ai/chat/index'
 
 const adminLayoutRoute = adminLayoutRouteImport.update({
   id: '/(admin)',
@@ -111,6 +114,11 @@ const adminDictIndexRoute = adminDictIndexRouteImport.update({
   path: '/dict/',
   getParentRoute: () => adminLayoutRoute,
 } as any)
+const adminAiIndexRoute = adminAiIndexRouteImport.update({
+  id: '/ai/',
+  path: '/ai/',
+  getParentRoute: () => adminLayoutRoute,
+} as any)
 const authLoginResetPwdIndexRoute = authLoginResetPwdIndexRouteImport.update({
   id: '/reset-pwd/',
   path: '/reset-pwd/',
@@ -171,6 +179,16 @@ const adminLogAccessIndexRoute = adminLogAccessIndexRouteImport.update({
   path: '/log/access/',
   getParentRoute: () => adminLayoutRoute,
 } as any)
+const adminAiCustomIndexRoute = adminAiCustomIndexRouteImport.update({
+  id: '/ai/custom/',
+  path: '/ai/custom/',
+  getParentRoute: () => adminLayoutRoute,
+} as any)
+const adminAiChatIndexRoute = adminAiChatIndexRouteImport.update({
+  id: '/ai/chat/',
+  path: '/ai/chat/',
+  getParentRoute: () => adminLayoutRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -180,6 +198,7 @@ export interface FileRoutesByFullPath {
   '/403': typeof errors403Route
   '/404': typeof errors404Route
   '/500': typeof errors500Route
+  '/ai/': typeof adminAiIndexRoute
   '/dict/': typeof adminDictIndexRoute
   '/home/': typeof adminHomeIndexRoute
   '/log/': typeof adminLogIndexRoute
@@ -187,6 +206,8 @@ export interface FileRoutesByFullPath {
   '/storage/': typeof adminStorageIndexRoute
   '/system/': typeof adminSystemIndexRoute
   '/login/': typeof authLoginIndexRoute
+  '/ai/chat/': typeof adminAiChatIndexRoute
+  '/ai/custom/': typeof adminAiCustomIndexRoute
   '/log/access/': typeof adminLogAccessIndexRoute
   '/log/operation/': typeof adminLogOperationIndexRoute
   '/monitor/job/': typeof adminMonitorJobIndexRoute
@@ -206,6 +227,7 @@ export interface FileRoutesByTo {
   '/403': typeof errors403Route
   '/404': typeof errors404Route
   '/500': typeof errors500Route
+  '/ai': typeof adminAiIndexRoute
   '/dict': typeof adminDictIndexRoute
   '/home': typeof adminHomeIndexRoute
   '/log': typeof adminLogIndexRoute
@@ -213,6 +235,8 @@ export interface FileRoutesByTo {
   '/storage': typeof adminStorageIndexRoute
   '/system': typeof adminSystemIndexRoute
   '/login': typeof authLoginIndexRoute
+  '/ai/chat': typeof adminAiChatIndexRoute
+  '/ai/custom': typeof adminAiCustomIndexRoute
   '/log/access': typeof adminLogAccessIndexRoute
   '/log/operation': typeof adminLogOperationIndexRoute
   '/monitor/job': typeof adminMonitorJobIndexRoute
@@ -236,6 +260,7 @@ export interface FileRoutesById {
   '/(errors)/403': typeof errors403Route
   '/(errors)/404': typeof errors404Route
   '/(errors)/500': typeof errors500Route
+  '/(admin)/ai/': typeof adminAiIndexRoute
   '/(admin)/dict/': typeof adminDictIndexRoute
   '/(admin)/home/': typeof adminHomeIndexRoute
   '/(admin)/log/': typeof adminLogIndexRoute
@@ -243,6 +268,8 @@ export interface FileRoutesById {
   '/(admin)/storage/': typeof adminStorageIndexRoute
   '/(admin)/system/': typeof adminSystemIndexRoute
   '/(auth)/login/': typeof authLoginIndexRoute
+  '/(admin)/ai/chat/': typeof adminAiChatIndexRoute
+  '/(admin)/ai/custom/': typeof adminAiCustomIndexRoute
   '/(admin)/log/access/': typeof adminLogAccessIndexRoute
   '/(admin)/log/operation/': typeof adminLogOperationIndexRoute
   '/(admin)/monitor/job/': typeof adminMonitorJobIndexRoute
@@ -266,6 +293,7 @@ export interface FileRouteTypes {
     | '/403'
     | '/404'
     | '/500'
+    | '/ai/'
     | '/dict/'
     | '/home/'
     | '/log/'
@@ -273,6 +301,8 @@ export interface FileRouteTypes {
     | '/storage/'
     | '/system/'
     | '/login/'
+    | '/ai/chat/'
+    | '/ai/custom/'
     | '/log/access/'
     | '/log/operation/'
     | '/monitor/job/'
@@ -292,6 +322,7 @@ export interface FileRouteTypes {
     | '/403'
     | '/404'
     | '/500'
+    | '/ai'
     | '/dict'
     | '/home'
     | '/log'
@@ -299,6 +330,8 @@ export interface FileRouteTypes {
     | '/storage'
     | '/system'
     | '/login'
+    | '/ai/chat'
+    | '/ai/custom'
     | '/log/access'
     | '/log/operation'
     | '/monitor/job'
@@ -321,6 +354,7 @@ export interface FileRouteTypes {
     | '/(errors)/403'
     | '/(errors)/404'
     | '/(errors)/500'
+    | '/(admin)/ai/'
     | '/(admin)/dict/'
     | '/(admin)/home/'
     | '/(admin)/log/'
@@ -328,6 +362,8 @@ export interface FileRouteTypes {
     | '/(admin)/storage/'
     | '/(admin)/system/'
     | '/(auth)/login/'
+    | '/(admin)/ai/chat/'
+    | '/(admin)/ai/custom/'
     | '/(admin)/log/access/'
     | '/(admin)/log/operation/'
     | '/(admin)/monitor/job/'
@@ -459,6 +495,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof adminDictIndexRouteImport
       parentRoute: typeof adminLayoutRoute
     }
+    '/(admin)/ai/': {
+      id: '/(admin)/ai/'
+      path: '/ai'
+      fullPath: '/ai/'
+      preLoaderRoute: typeof adminAiIndexRouteImport
+      parentRoute: typeof adminLayoutRoute
+    }
     '/(auth)/login/reset-pwd/': {
       id: '/(auth)/login/reset-pwd/'
       path: '/reset-pwd'
@@ -543,6 +586,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof adminLogAccessIndexRouteImport
       parentRoute: typeof adminLayoutRoute
     }
+    '/(admin)/ai/custom/': {
+      id: '/(admin)/ai/custom/'
+      path: '/ai/custom'
+      fullPath: '/ai/custom/'
+      preLoaderRoute: typeof adminAiCustomIndexRouteImport
+      parentRoute: typeof adminLayoutRoute
+    }
+    '/(admin)/ai/chat/': {
+      id: '/(admin)/ai/chat/'
+      path: '/ai/chat'
+      fullPath: '/ai/chat/'
+      preLoaderRoute: typeof adminAiChatIndexRouteImport
+      parentRoute: typeof adminLayoutRoute
+    }
   }
 }
 
@@ -567,11 +624,14 @@ const adminSystemLayoutRouteWithChildren =
 
 interface adminLayoutRouteChildren {
   adminSystemLayoutRoute: typeof adminSystemLayoutRouteWithChildren
+  adminAiIndexRoute: typeof adminAiIndexRoute
   adminDictIndexRoute: typeof adminDictIndexRoute
   adminHomeIndexRoute: typeof adminHomeIndexRoute
   adminLogIndexRoute: typeof adminLogIndexRoute
   adminMonitorIndexRoute: typeof adminMonitorIndexRoute
   adminStorageIndexRoute: typeof adminStorageIndexRoute
+  adminAiChatIndexRoute: typeof adminAiChatIndexRoute
+  adminAiCustomIndexRoute: typeof adminAiCustomIndexRoute
   adminLogAccessIndexRoute: typeof adminLogAccessIndexRoute
   adminLogOperationIndexRoute: typeof adminLogOperationIndexRoute
   adminMonitorJobIndexRoute: typeof adminMonitorJobIndexRoute
@@ -581,11 +641,14 @@ interface adminLayoutRouteChildren {
 
 const adminLayoutRouteChildren: adminLayoutRouteChildren = {
   adminSystemLayoutRoute: adminSystemLayoutRouteWithChildren,
+  adminAiIndexRoute: adminAiIndexRoute,
   adminDictIndexRoute: adminDictIndexRoute,
   adminHomeIndexRoute: adminHomeIndexRoute,
   adminLogIndexRoute: adminLogIndexRoute,
   adminMonitorIndexRoute: adminMonitorIndexRoute,
   adminStorageIndexRoute: adminStorageIndexRoute,
+  adminAiChatIndexRoute: adminAiChatIndexRoute,
+  adminAiCustomIndexRoute: adminAiCustomIndexRoute,
   adminLogAccessIndexRoute: adminLogAccessIndexRoute,
   adminLogOperationIndexRoute: adminLogOperationIndexRoute,
   adminMonitorJobIndexRoute: adminMonitorJobIndexRoute,

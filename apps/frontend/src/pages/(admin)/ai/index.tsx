@@ -1,0 +1,15 @@
+import { createFileRoute, redirect } from "@tanstack/react-router";
+
+export const Route = createFileRoute("/(admin)/ai/")({
+  beforeLoad: () => {
+    throw redirect({ to: "/ai/chat" });
+  },
+  staticData: {
+    i18nKey: "route.ai",
+    menu: {
+      icon: "ph:scroll",
+      order: 3,
+    },
+    title: "AI管理",
+  },
+});
