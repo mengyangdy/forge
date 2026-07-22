@@ -18,6 +18,7 @@ import { serveStatic } from "@hono/node-server/serve-static";
 import job from "./modules/job/job.controller.js";
 import { jobService } from "./modules/job/job.service.js";
 import route from "./modules/route/route.controller.js";
+import ai from "./modules/ai/ai.controller.js";
 
 import { env } from "./config.js";
 import { loggerMiddleware } from "./logger.js";
@@ -94,7 +95,8 @@ const apiRoutes = new OpenAPIHono()
   .route("/storage", storage)
   .route("/jobs", job)
   .route("/department", department)
-  .route("/route", route);
+  .route("/route", route)
+  .route("/ai", ai);
 
 // 将所有API路由挂载到 /api 路径下
 const routes = app.route("/api", apiRoutes);

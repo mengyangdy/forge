@@ -92,7 +92,7 @@ const MenuPage = () => {
   });
 
   const scrollX = getTableScrollX(tableProps.columns ?? []) + 60;
-  const { scrollConfig, tableWrapperRef } = useSemiTableScroll(scrollX);
+  const { scrollConfig, tableWrapperRef } = useSemiTableScroll(scrollX, false);
 
   const { data: permissionTree } = usePermissionTreeQuery();
   const menuTreeData = useMemo(() => toMenuTreeData(permissionTree ?? []), [permissionTree]);

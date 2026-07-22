@@ -23,11 +23,13 @@
     "db:seed": "tsx src/db/seed.ts"
   },
   "dependencies": {
+    "@ai-sdk/openai": "catalog:",
     "@forge/shared": "workspace:*",
     "@hono/node-server": "catalog:",
     "@hono/zod-openapi": "catalog:",
     "@hono/zod-validator": "catalog:",
     "@scalar/hono-api-reference": "catalog:",
+    "ai": "catalog:",
     "bcryptjs": "catalog:",
     "bullmq": "catalog:",
     "drizzle-orm": "catalog:",

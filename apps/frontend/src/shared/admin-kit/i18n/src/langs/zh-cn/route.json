@@ -95,5 +95,8 @@
   "projects_$pid": "项目详情",
   "projects_$pid_edit": "项目编辑",
   "projects_$pid_edit_$id": "项目编辑详情",
-  "user-center": "用户中心"
+  "user-center": "用户中心",
+  "ai": "AI管理",
+  "ai_chat": "AI对话",
+  "ai_custom": "AI自定义"
 }

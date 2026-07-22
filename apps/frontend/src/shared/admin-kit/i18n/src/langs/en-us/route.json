@@ -113,5 +113,8 @@
   "exception_500": "500",
   "log": "Log Management",
   "log_access": "Access Logs",
-  "log_operation": "Operation Logs"
+  "log_operation": "Operation Logs",
+  "ai": "AI Management",
+  "ai_chat": "AI Chat",
+  "ai_custom": "AI Custom"
 }

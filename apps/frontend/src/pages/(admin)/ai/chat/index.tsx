@@ -7,7 +7,7 @@ export const Route = createFileRoute("/(admin)/ai/chat/")({
   staticData: {
     i18nKey: "route.ai_chat",
     menu: {
-      icon: "ph:shield-check",
+      icon: "ph:chats-teardrop",
       order: 1,
     },
     title: "AI对话",

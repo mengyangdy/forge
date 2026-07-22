@@ -7,7 +7,7 @@ export const Route = createFileRoute("/(admin)/ai/")({
   staticData: {
     i18nKey: "route.ai",
     menu: {
-      icon: "ph:scroll",
+      icon: "ph:robot",
       order: 3,
     },
     title: "AI管理",
