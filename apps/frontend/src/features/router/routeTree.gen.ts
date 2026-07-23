@@ -38,7 +38,6 @@ import { Route as adminMonitorJobIndexRouteImport } from './../../pages/(admin)/
 import { Route as adminLogOperationIndexRouteImport } from './../../pages/(admin)/log/operation/index'
 import { Route as adminLogAccessIndexRouteImport } from './../../pages/(admin)/log/access/index'
 import { Route as adminAiCustomIndexRouteImport } from './../../pages/(admin)/ai/custom/index'
-import { Route as adminAiChatIndexRouteImport } from './../../pages/(admin)/ai/chat/index'
 
 const adminLayoutRoute = adminLayoutRouteImport.update({
   id: '/(admin)',
@@ -184,11 +183,6 @@ const adminAiCustomIndexRoute = adminAiCustomIndexRouteImport.update({
   path: '/ai/custom/',
   getParentRoute: () => adminLayoutRoute,
 } as any)
-const adminAiChatIndexRoute = adminAiChatIndexRouteImport.update({
-  id: '/ai/chat/',
-  path: '/ai/chat/',
-  getParentRoute: () => adminLayoutRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -206,7 +200,6 @@ export interface FileRoutesByFullPath {
   '/storage/': typeof adminStorageIndexRoute
   '/system/': typeof adminSystemIndexRoute
   '/login/': typeof authLoginIndexRoute
-  '/ai/chat/': typeof adminAiChatIndexRoute
   '/ai/custom/': typeof adminAiCustomIndexRoute
   '/log/access/': typeof adminLogAccessIndexRoute
   '/log/operation/': typeof adminLogOperationIndexRoute
@@ -235,7 +228,6 @@ export interface FileRoutesByTo {
   '/storage': typeof adminStorageIndexRoute
   '/system': typeof adminSystemIndexRoute
   '/login': typeof authLoginIndexRoute
-  '/ai/chat': typeof adminAiChatIndexRoute
   '/ai/custom': typeof adminAiCustomIndexRoute
   '/log/access': typeof adminLogAccessIndexRoute
   '/log/operation': typeof adminLogOperationIndexRoute
@@ -268,7 +260,6 @@ export interface FileRoutesById {
   '/(admin)/storage/': typeof adminStorageIndexRoute
   '/(admin)/system/': typeof adminSystemIndexRoute
   '/(auth)/login/': typeof authLoginIndexRoute
-  '/(admin)/ai/chat/': typeof adminAiChatIndexRoute
   '/(admin)/ai/custom/': typeof adminAiCustomIndexRoute
   '/(admin)/log/access/': typeof adminLogAccessIndexRoute
   '/(admin)/log/operation/': typeof adminLogOperationIndexRoute
@@ -301,7 +292,6 @@ export interface FileRouteTypes {
     | '/storage/'
     | '/system/'
     | '/login/'
-    | '/ai/chat/'
     | '/ai/custom/'
     | '/log/access/'
     | '/log/operation/'
@@ -330,7 +320,6 @@ export interface FileRouteTypes {
     | '/storage'
     | '/system'
     | '/login'
-    | '/ai/chat'
     | '/ai/custom'
     | '/log/access'
     | '/log/operation'
@@ -362,7 +351,6 @@ export interface FileRouteTypes {
     | '/(admin)/storage/'
     | '/(admin)/system/'
     | '/(auth)/login/'
-    | '/(admin)/ai/chat/'
     | '/(admin)/ai/custom/'
     | '/(admin)/log/access/'
     | '/(admin)/log/operation/'
@@ -593,13 +581,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof adminAiCustomIndexRouteImport
       parentRoute: typeof adminLayoutRoute
     }
-    '/(admin)/ai/chat/': {
-      id: '/(admin)/ai/chat/'
-      path: '/ai/chat'
-      fullPath: '/ai/chat/'
-      preLoaderRoute: typeof adminAiChatIndexRouteImport
-      parentRoute: typeof adminLayoutRoute
-    }
   }
 }
 
@@ -630,7 +611,6 @@ interface adminLayoutRouteChildren {
   adminLogIndexRoute: typeof adminLogIndexRoute
   adminMonitorIndexRoute: typeof adminMonitorIndexRoute
   adminStorageIndexRoute: typeof adminStorageIndexRoute
-  adminAiChatIndexRoute: typeof adminAiChatIndexRoute
   adminAiCustomIndexRoute: typeof adminAiCustomIndexRoute
   adminLogAccessIndexRoute: typeof adminLogAccessIndexRoute
   adminLogOperationIndexRoute: typeof adminLogOperationIndexRoute
@@ -647,7 +627,6 @@ const adminLayoutRouteChildren: adminLayoutRouteChildren = {
   adminLogIndexRoute: adminLogIndexRoute,
   adminMonitorIndexRoute: adminMonitorIndexRoute,
   adminStorageIndexRoute: adminStorageIndexRoute,
-  adminAiChatIndexRoute: adminAiChatIndexRoute,
   adminAiCustomIndexRoute: adminAiCustomIndexRoute,
   adminLogAccessIndexRoute: adminLogAccessIndexRoute,
   adminLogOperationIndexRoute: adminLogOperationIndexRoute,
